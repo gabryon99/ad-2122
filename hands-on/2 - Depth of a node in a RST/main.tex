@@ -1,0 +1,95 @@
+% !TeX program = lualatex
+
+\documentclass{article}
+\usepackage[a4paper, total={5.5in, 10in}]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage[english]{babel}
+\usepackage{amsthm}
+\usepackage{calrsfs}
+\usepackage{lmodern}%get scalable font
+\usepackage{titling}
+
+% Define command for show :=
+\newcommand{\defeq}{\vcentcolon=}
+% Set font family
+\fontfamily{qpl}\selectfont 
+% Calligraphic H
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\newcommand{\Hb}{\pazocal{H}}
+\newcommand{\Bb}{\pazocal{B}}
+
+\newcommand*{\QEDB}{\null\nobreak\hfill\ensuremath{\square}}
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition*}[theorem]{Definition}
+
+\title{Second hands-on: Depth of a node in a Random Search Tree\\[1ex] \large Algorithm Design (2021/2022)}
+\author{Gabriele Pappalardo\\Email: g.pappalardo4@studenti.unipi.it\\Department of Computer Science}
+\date{March 2022}
+
+\pretitle{
+    \begin{center}
+    \LARGE
+    \includegraphics[width=5cm]{/Users/gabryon/Projects/Papers/AD-21-22/assets/images/unipi.png}\\
+}
+\posttitle{
+    \end{center}
+}
+
+\setcounter{section}{0}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+A \textbf{random binary search tree} for a set $S$ can be defined as follows: if $S$ is empty, then the null tree is a random search tree; otherwise, choose uniformly at random a key $k \in S$: the random search tree is obtained by picking $k$ as \textit{root}, and the random search trees on $L = \{x \in S : x < k\}$ and $R = \{x \in S : x > k\}$ become, respectively, the left and right subtrees of the root $k$.\\
+
+\noindent Consider the \textit{Randomized Quick Sort} (RQS) discussed in class and analysed with indicator variables, and observe that the random selection of the pivots follows the above process, thus producing a random search tree of n nodes.\\
+
+\begin{itemize}
+    \item Using a variation of the analysis with indicator variables $X_{ij}$, prove that the expected depth of a node (i.e. the random variable representing the distance of the node from the root) is nearly $2 \log n$. 
+    \item Prove that the expected size of its subtree is nearly $2 \log n$ too, observing that it is a simple variation of the previous analysis.
+    \item Prove that the probability that the depth of a node exceeds $c2 \log n$ is small for any given constant $c > 2$. 
+\end{itemize}
+
+
+\section{Solution}
+
+We define the elements of a random binary search tree with $\forall i \in [1, n] . x_i \in S$. Let $X_{ij}$ an indicator random variable defined as follows:
+\begin{equation}
+    X_{ij} = \begin{cases}
+    1 & x_i \, \textrm{is an ancestor of} \, x_j\\
+    0 & \textrm{otherwise}
+    \end{cases}
+\end{equation}
+
+\noindent The depth of a node can be expressed as the sum of all the indicator random variables. Let $D_i$ be the depth of a node $x_i$ in a random binary search tree, defined as $D_i = \sum_{j = 1}^{n} X_{ij}$. We can express the expected depth as:
+\begin{equation}
+E[D_i] = E\bigg[\sum_{j = 1}^{n} X_{ij}\bigg] = \sum_{j = 1}^{n} E[X_{ij}] = \sum_{j = 1}^{n} \textrm{Pr}(\{X_{ij} = 1\})
+\end{equation}
+
+\noindent The probability of $X_{ij} = 1$ can be computed using the following fact: if the node $x_i$ is an ancestor of $x_j$ it means that $x_i$ is inserted before $x_j$ (and $i > j$), therefore in the set $\{x_j, x_{j + 1}, \dots, x_{i}\}$ we have $i - j + 1$ elements to choice $x_j$, otherwise, if $x_i$ is a descendant of $x_j$ it means that $x_i$ has been inserted after ($i < j$), therefore in the set $\{x_{i}, x_{i + 1}, \dots, x_j\}$ we have $j - i +1$ elements to choice. 
+
+\begin{equation}
+    \textrm{Pr}(\{X_{ij} = 1\}) = \begin{cases}
+        \frac{1}{i - j + 1} & i > j \\
+        \frac{1}{j - i + 1} & i < j
+    \end{cases}
+\end{equation}
+
+\noindent The expected depth of a node can be computed using this fact:
+
+\begin{align*}
+    E[D_i] = \sum_{j = 0}^{n} \textrm{Pr}(\{X_{ij} = 1\}) = \\ 
+    \sum_{j = 0}^{i} \frac{1}{i - j + 1} + \sum_{j = i + 1}^{n} \frac{1}{j - i + 1} = \\
+    \sum_{k = 1}^{i + 1} \frac{1}{k} + \sum_{k = 2}^{n - i + 1} \frac{1}{k} \le 
+    \log{n} + \log{n} = 2 \log{n}
+\end{align*}
+
+\end{document}

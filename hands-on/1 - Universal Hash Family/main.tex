@@ -1,0 +1,144 @@
+% !TeX program = lualatex
+
+\documentclass{article}
+\usepackage[a4paper, total={5.5in, 10in}]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage[english]{babel}
+\usepackage{amsthm}
+\usepackage{calrsfs}
+\usepackage{lmodern}%get scalable font
+\usepackage{titling}
+
+% Define command for show :=
+\newcommand{\defeq}{\vcentcolon=}
+% Set font family
+\fontfamily{qpl}\selectfont 
+% Calligraphic H
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\newcommand{\Hb}{\pazocal{H}}
+\newcommand{\Bb}{\pazocal{B}}
+
+\newcommand*{\QEDB}{\null\nobreak\hfill\ensuremath{\square}}
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition*}[theorem]{Definition}
+
+\title{First hands-on: Universal Hash Family\\[1ex] \large Algorithm Design (2021/2022)}
+\author{Gabriele Pappalardo\\Email: g.pappalardo4@studenti.unipi.it\\Department of Computer Science}
+\date{February 2022}
+
+\pretitle{
+    \begin{center}
+    \LARGE
+    \includegraphics[width=5cm]{/Users/gabryon/Projects/Papers/AD-21-22/assets/images/unipi.png}\\
+}
+\posttitle{
+    \end{center}
+}
+
+\setcounter{section}{0}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\subsection{Terminologies and Definitions}
+
+This subsection defines terminology and definitions in order to fully understand the following essay.\\
+
+\noindent With the symbol $\mathbb{U}$ we denote the set of possible keys. The sets $\mathbb{Z}_p^*, \mathbb{Z}_p$ are defined as $\mathbb{Z}_p^* = \{0, \dots, p - 1\}, \mathbb{Z}_p = \{1, \dots, p - 1\}$ where $p$ is a \textit{prime} number.
+
+\begin{definition*}[Universal Hash Family]
+A hash family $\Hb$ is said to be \textbf{universal} if given two different keys $k_1$ and $k_2$ the probability of collision is less than $\frac{1}{m}$.
+
+$$
+\forall k_1, k_2 \in \mathbb{U}, k_1 \ne k_2 .Pr_{h \in \Hb}(\{h(k_1) = h(k_2)\}) \le \frac{1}{m}
+$$
+
+\end{definition*}
+
+\subsection{Problem definition}
+
+The first Algorithm Design hands-on requests to prove that given the following family of functions:
+$$
+\Hb \defeq \{ h_{ab}(x) = ((ax + b) \bmod p) \bmod m \mid a \in \mathbb{Z}_p^*, b \in \mathbb{Z}_p \}
+$$
+is \textit{universal} with $m > 1$, $p \in [m + 1, 2m)$ \textit{prime}. That is, for any $k_1 \ne k_2$, it holds that:
+$$
+|\Bb| = |\{h \in \Hb \mid h(k_1) = h(k_2) \}| = \frac{|\Hb|}{m}
+$$
+
+\begin{proof}
+
+Two different keys $k_1, k_2$, collides if and only if the hash function image is equal. So given a function $h_{ab} \in \Hb$, and $k_1 \ne k_2 \in \mathbb{Z}_p$:
+
+\begin{align*}
+h_{ab}(k_1) = h_{ab}(k_2)
+\iff ((ak_1 + b) \bmod p) \bmod m = ((ak_2 + b) \bmod p) \bmod m
+\end{align*}
+
+\noindent Consider first $r$ and $s$, defined as:
+\begin{align*}
+    r &= (ak_1 + b) \bmod p \\
+    s &= (ak_2 + b) \bmod p
+\end{align*}
+\noindent If the keys $k_1$ and $k_2$ are different, we can see that $r \ne s$. To show this, subtract $r$ from $s$:
+\begin{align*}
+    r - s \equiv (ak_1 + b) - (ak_2 + b) \pmod p \iff r - s \equiv a(k_1 - k_2) \pmod p
+\end{align*}
+In order to be equal, the values $r$ and $s$ should be congruent to $0$ in $\bmod p$. We know from our hypothesis that $k_1, k_2 \in \mathbb{Z}_p \land k_1 \ne k_2$, therefore $k_1 - k_2 \not{\equiv} 0 \pmod p$. Since by definition $a \in \mathbb{Z}_p$ we can conclude that $a \not{\equiv} 0 \pmod p$, thus $r - s \not\equiv 0 \pmod p$.\\
+
+\noindent Knowing that value $r$ is different from $s$, we can derive that $a$ and $b$ are uniquely determined. As a matter of fact, we know:
+\begin{equation*}
+    \begin{cases}
+        r \equiv ak_1 + b & \pmod p \\
+        s \equiv ak_2 + b & \pmod p
+    \end{cases} \\
+    \iff
+    \begin{cases}
+        b \equiv r - ak_1 & \pmod p \\
+        s \equiv ak_2 + (r - ak_1) & \pmod p
+    \end{cases}
+\end{equation*}
+
+\begin{equation*}
+    \begin{cases}
+        b \equiv r - ak_1 & \pmod p \\
+        s - r \equiv ak_2 - ak_1 & \pmod p
+    \end{cases} \\
+    \iff
+    \begin{cases}
+        b \equiv r - ak_1 & \pmod p \\
+        s - r \equiv a(k_2 - k_1) & \pmod p
+    \end{cases} 
+\end{equation*}
+
+\begin{equation*}
+\iff
+     \begin{cases}
+        b \equiv r - ak_1 & \pmod p \\
+        a \equiv (k_2 - k_1)^{-1} (r - s) & \pmod p
+    \end{cases}
+\end{equation*}
+
+
+
+\noindent Thus, there is one-to-one correspondence between the pairs $(a, b)$, with $a \ne 0$, and the pair $(r, s)$, with $r \ne s$. We have $p(p - 1)$ possibilities to select the pair $(a, b)$ and $(r, s)$.\\
+
+\noindent Therefore, the probability that keys $k_1$ and $k_2$ collide is equal to the probability that $r \equiv s \pmod m$. For a fixed $r$, the number to choose $s$, with $s \ne r, s \equiv r \pmod m$, from the $(p - 1)$ possibilities, is at most $\frac{(p - 1)}{m}$. So, the number of bad hash functions $h \in \Hb$ is equal to $p\frac{(p - 1)}{m} = \frac{|H|}{m}$, in the end:
+
+$$
+Pr(\{h \in \Hb \mid h(k_1) = h(k_2) \}) = \frac{\text{\# bad choices of} \, h}{\text{\# all choices of} \, h \in \Hb} = \frac{|\Bb|}{|\Hb|} = \frac{\frac{|\Hb|}{m}}{|\Hb|} = \frac{1}{m}
+$$ 
+
+\noindent $\Hb$ is an \textit{universal} hash family.
+
+\end{proof}
+
+\end{document}

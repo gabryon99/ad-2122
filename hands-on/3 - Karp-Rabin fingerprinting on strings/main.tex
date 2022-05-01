@@ -1,0 +1,175 @@
+% !TeX program = lualatex
+
+\documentclass{article}
+\usepackage[a4paper, total={5.5in, 10in}]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage[english]{babel}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{calrsfs}
+\usepackage{lmodern}%get scalable font
+\usepackage{titling}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{fontspec}
+\usepackage{lstfiracode}
+
+% Define command for show :=
+\newcommand{\defeq}{\vcentcolon=}
+% Set font family
+\fontfamily{qpl}\selectfont 
+% Calligraphic H
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\newcommand{\Hb}{\pazocal{H}}
+\newcommand{\Bb}{\pazocal{B}}
+
+\newcommand*{\QEDB}{\null\nobreak\hfill\ensuremath{\square}}
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition*}[theorem]{Definition}
+
+\title{Third hands-on: Karp-Rabin fingerprinting on strings \\[1ex] \large Algorithm Design (2021/2022)}
+\author{Gabriele Pappalardo\\Email: g.pappalardo4@studenti.unipi.it\\Department of Computer Science}
+\date{March 2022}
+
+\pretitle{
+    \begin{center}
+    \LARGE
+    \includegraphics[width=5cm]{/Users/gabryon/Projects/Papers/AD-21-22/assets/images/unipi.png}\\
+}
+\posttitle{
+    \end{center}
+}
+
+\setmonofont{FiraCode}[
+    Scale=0.85,
+    Contextuals=Alternate % Activate the calt feature
+]
+
+\lstset{
+    style=FiraCodeStyle,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                
+    showspaces=false,                
+    showstringspaces=false,
+    basewidth=0.6em,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    basicstyle=\ttfamily, % Use \ttfamily for source code listings
+    commentstyle=\color{ForestGreen}
+}
+
+\setcounter{section}{0}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Given a string $S \equiv S[0 \dots n - 1]$, and two positions $0 \le i < j \le n − 1$, the longest common extension \verb+lce(i, j)+ is the length of the maximal run of matching characters from those positions, namely: if $S[i] \ne S[j]$ then \verb+lce(i, j) = 0+; otherwise, \verb+lce(i, j)+ $= \max \{l \ge 1 : S[i \dots i + l − 1] = S[j \dots j + l − 1]\}$. For example, if $S$ = "\textit{abracadabra}", then \verb+lce(1, 2) = 0+, \verb+lce(0, 3) = 1+, and \verb+lce(0, 7) = 4+. Given $S$ in advance for preprocessing, build a data structure for $S$ based on the \textbf{Karp-Rabin} fingerprinting, in $O(n \log n)$ time, so that it supports subsequent online queries of the following two types: 
+
+\begin{itemize}
+    \item \verb+lce(i,j)+: it computes the longest common extension at positions $i$ and $j$ in $O(\log n)$ time. 
+    \item \verb+equal(i,j,l)+: it checks if $S[i \dots i+l−1]=S[j \dots j+l{−}1]$ in constant time. 
+\end{itemize}
+
+\noindent Analyze the cost and the error probability. The space occupied by the data structure can be $O(n \log n)$ but it is possible to use $O(n)$ space.  
+
+\section{Solution}
+
+Before giving the requested solution, we start from the baseline one. The problem can be solved in $O(n^2)$ space with $O(1)$ time to compute the \verb+equal(i, j, l)+ and $O(\log n)$ time for the \verb+lce(i, j)+. The baseline solution makes use of a matrix $M \in \mathbb{Z}_p^{n \times n}$ where each cell contains the Karp-Rabin fingerprint $F_{ij}$.
+
+\begin{figure}[htp]
+\begin{equation}
+    \begin{bmatrix}
+        F_{00}      & F_{01}    & F_{02} & F_{03} & \dots & F_{0n} \\
+        \emptyset   & F_{11}    & F_{12} & F_{13} & \dots & F_{1n} \\
+        \emptyset   & \emptyset & F_{22} & F_{23} & \dots & F_{2n} \\
+        \emptyset   & \emptyset & \emptyset & F_{33} & \dots & F_{3n} \\
+        \dots & \dots & \dots & \dots & \dots & \dots \\
+        \emptyset   & \emptyset & \emptyset & \emptyset & \emptyset & F_{nn} \\
+    \end{bmatrix}
+\end{equation}
+\caption{Where $F_{ij}$ is the Karp-Rabin of the substring $S[i \dots j]$}
+\end{figure}
+
+\noindent To compute the \verb+equal(i, j, l)+ we will use the function \verb+equal(M, i, j, l)+ shown in the pseudo-Python code list \ref{lst:eq1}.
+
+\begin{lstlisting}[label={lst:eq1},caption="Function to compute the equality.",language=Python]
+def equal(M, i, j, l):
+    
+    # n is the length of the string
+    if (i + l - 1) >= n or (j + l - 1) >= n:
+            return False
+
+    fi = M[i][i + l - 1]
+    fj = M[j][j + l - 1]
+    return (fi == fj)
+\end{lstlisting}
+
+\noindent To compute the \verb+lce(i, j, l)+ we will use the function \verb+lce(M, i, j, l)+ show in the pseudo-Python code list \ref{lst:lce1}.
+
+\begin{lstlisting}[label={lst:lce1},caption="Function to compute the longest common extension.",language=Python]
+def lce(M, i, j, l):
+    if l > 0:
+        if equal(M, i, j, l):
+            return l + lce(i + l, j + l, l)
+        else:
+            return lce(i, j, l / 2)
+    else:
+        return 0
+\end{lstlisting}
+
+\noindent These two algorithms respect the requested running time. To reduce the space used by the matrix $M$, we can use just one row: the first one. The Karp-Rabin fingerprint of a sub-string $S[i \dots j], i < j$ is computed using the equation 2.
+
+\begin{equation}
+    F_{ij} = h(S) = \sum_{k = i}^{j} \textrm{ord}(S_k) \sigma^{k - i} \mod p
+\end{equation}
+
+\noindent Where $p$ is a prime number and $\textrm{ord}: \Sigma \to \mathbb{N}$ is a function converting a character belonging to the string alphabet to a natural number (e.g. the \verb+String.fromCharCode(...)+ function in JavaScript). The hash function can be viewed as a polynomial equation in $\mathbb{Z}[x]_p$ field, as shown in equation 3.
+
+\begin{align}
+    F_{0n} = h(S) = \textrm{ord}(S_0) + \textrm{ord}(S_1) \sigma + \textrm{ord}(S_2) \sigma^2 + \dots + \textrm{ord}(S_{n-1}) \sigma^{n - 1} \mod p \\
+    = \textrm{ord}(S_0) + \sigma(\textrm{ord}(S_1) + \sigma ( \textrm{ord}(S_2) + \dots + \sigma\textrm{ord}(S_{n - 1})))) \mod p
+\end{align}
+
+\noindent We can exploit the properties of this rolling hash function to compute the missing fingerprints that we removed from the matrix. In fact, given two indices, $i, j$ we can find its fingerprint $F_{ij}$, using only the first row of the matrix, in a mathematical way as shown in equation 5.
+
+\begin{equation}
+    F_{ij} = ((F_{0j} - F_{0(i - 1)}) / \sigma^{i}) \mod p
+\end{equation}
+
+\noindent We show a numerical example. Suppose we have a string $S$ (where $|S| > 6$), we are going to find the fingerprint $F_{36}$ using the statement above. We are assuming $\textrm{ord}(S_k) = S_k$ in order to ease computations.
+
+\begin{align}
+    F_{36} = (F_{06} - F_{02}) / \sigma^{3} \mod p \\
+    F_{36} = S_3 + S_4 \sigma + S_5 \sigma^2  + S_6 \sigma^3 \mod p
+\end{align}
+
+\noindent We know already, $F_{06}$ and $F_{02}$ which are computed as shown below.
+
+\begin{flalign}
+    F_{06} = S_0 + S_1\sigma +  S_2 \sigma^2+ S_3 \sigma^3 + S_4 \sigma^4 +  S_5 \sigma^5 + S_6 \sigma^{6} \mod p \\
+    F_{02} = S_0 + S_1\sigma + S_2 \sigma^2 \mod p \\
+    F_{06} - F_{02} = S_3 \sigma^3 + S_4 \sigma^4 +  S_5 \sigma^5 + S_6 \sigma^{6} \mod p \\
+    F_{36} = (F_{06} - F_{02}) / \sigma^3 \mod p = S_3 + S_4 \sigma + S_5 \sigma^2  + S_6 \sigma^3 \mod p
+\end{flalign}
+
+
+
+% TODO. See the iPad
+% https://dev-notes.eu/2019/12/Fast-Modular-Exponentiation/
+% La probabilita' di errore nella equal e' 1/n^c, per la LCE e' 1/n^c * log(n)
+
+\end{document}

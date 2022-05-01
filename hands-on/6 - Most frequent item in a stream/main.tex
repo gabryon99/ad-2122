@@ -1,0 +1,118 @@
+% !TeX program = lualatex
+
+\documentclass{article}
+\usepackage[a4paper, total={5.5in, 10in}]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage[english]{babel}
+\usepackage{amsthm}
+\usepackage{calrsfs}
+\usepackage{lmodern} %get scalable font
+\usepackage{titling}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{fontspec}
+\usepackage{lstfiracode}
+
+% Define command for show :=
+\newcommand{\defeq}{\vcentcolon=}
+% Set font family
+\fontfamily{qpl}\selectfont 
+% Calligraphic H
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\newcommand{\Hb}{\pazocal{H}}
+\newcommand{\Bb}{\pazocal{B}}
+
+\newcommand*{\QEDB}{\null\nobreak\hfill\ensuremath{\square}}
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition*}[theorem]{Definition}
+
+\title{Sixth hands-on: Most frequent item in a stream \\[1ex] \large Algorithm Design (2021/2022)}
+\author{Gabriele Pappalardo\\Email: g.pappalardo4@studenti.unipi.it\\Department of Computer Science}
+\date{March 2022}
+
+\pretitle{
+    \begin{center}
+    \LARGE
+    \includegraphics[width=5cm]{/Users/gabryon/Projects/Papers/AD-21-22/assets/images/unipi.png}\\
+}
+\posttitle{
+    \end{center}
+}
+
+
+\setmonofont[
+    Scale=0.85,
+    Contextuals=Alternate % Activate the calt feature
+]{FiraCode}
+
+\lstset{
+    style=FiraCodeStyle,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                
+    showspaces=false,                
+    showstringspaces=false,
+    basewidth=0.6em,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    basicstyle=\ttfamily, % Use \ttfamily for source code listings
+    commentstyle=\color{ForestGreen}
+}
+
+\setcounter{section}{0}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Suppose to have a stream of $n$ items, so that one of them occurs $ > n/2 $ times in the stream. 
+Also, the main memory is limited to keeping just $O(1)$ items and their counters (where the knowledge of the value of n is not actually required). Show how to find deterministically the most frequent item in this scenario.
+\newline
+
+\noindent \textit{Hint}: the problem cannot be solved deterministically if the most frequent item occurs $\le n/2$ times, so the fact that the frequency is $> n/2$ should be exploited.
+
+\section{Solution}
+A \textit{streaming algorithm} is an algorithm that receives its input as \textit{a stream} of data, 
+and that proceeds by making only one pass through the data.
+
+\noindent Assuming we have a stream of $n$ items, it is possible to find the element with the highest frequency, knowing that it occurs $n/2$ times. The proposed solution makes use of \textit{Boyer-Moore majority vote algorithm}, that is implemented in the Listing \ref{lst:majority}.
+
+\begin{lstlisting}[language=Python,caption="Boyer-Moore majority vote algorithm",label={lst:majority}]
+def boyer_moore_majority_vote(stream):
+
+	m = None
+	count = 0
+	
+	for i in range(len(stream)):
+		if count == 0:
+			m = stream[i]
+			count = 1
+		elif m == stream[i]:
+			count += 1
+		else:
+			count -= 1
+	
+	return m
+\end{lstlisting}
+
+\noindent The algorithm uses just two local variables: one for the element and the other for the counter. Thus, the algorithm  \textit{space complexity} is $O(1)$. The algorithm will always find the element with the higher frequency while it is repeated at least $n/2$ times. When analyzing the stream the following conditions are evaluated:
+\begin{enumerate}
+    \item if the counter is set to zero then we mark the element, denoted by the variable $m$, equal to i-th stream value, as the most frequent element;
+    \item if the i-th stream element is equal to the most frequent one, then we increase the counter by one;
+    \item otherwise, if none of the above conditions have been met, then the i-th element is different from the most frequent one. Therefore, we decrease the counter.
+\end{enumerate}
+
+\noindent If $m$ is the truly majority element, the counter will be always greater or equal than $1$, because the increments will be more than the decrements.
+
+\end{document}

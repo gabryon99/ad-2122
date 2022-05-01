@@ -1,0 +1,94 @@
+% !TeX program = lualatex
+
+\documentclass{article}
+\usepackage[a4paper, total={5.5in, 10in}]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage[english]{babel}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{calrsfs}
+\usepackage{lmodern}%get scalable font
+\usepackage{titling}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{fontspec}
+\usepackage{lstfiracode}
+
+% Define command for show :=
+\newcommand{\defeq}{\vcentcolon=}
+% Set font family
+\fontfamily{qpl}\selectfont 
+% Calligraphic H
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\newcommand{\Hb}{\pazocal{H}}
+\newcommand{\Bb}{\pazocal{B}}
+
+\newcommand*{\QEDB}{\null\nobreak\hfill\ensuremath{\square}}
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition*}[theorem]{Definition}
+
+\title{Eight hands-on: Count-min sketch: range queries\\[1ex] \large Algorithm Design (2021/2022)}
+\author{Gabriele Pappalardo\\Email: g.pappalardo4@studenti.unipi.it\\Department of Computer Science}
+\date{April 2022}
+
+\pretitle{
+    \begin{center}
+    \LARGE
+    \includegraphics[width=5cm]{/Users/gabryon/Projects/Papers/AD-21-22/assets/images/unipi.png}\\
+}
+\posttitle{
+    \end{center}
+}
+
+\setmonofont{FiraCode}[
+    Scale=0.85,
+    Contextuals=Alternate % Activate the calt feature
+]
+
+\lstset{
+    style=FiraCodeStyle,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                
+    showspaces=false,                
+    showstringspaces=false,
+    basewidth=0.6em,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    basicstyle=\ttfamily, % Use \ttfamily for source code listings
+    commentstyle=\color{ForestGreen}
+}
+
+
+\setcounter{section}{0}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Consider the counters $F[i]$ for $1 \le i \le n$, where $n$ is the number of items in the stream of any length. At any time, we know that $|| F ||$ is the total number of items (with repetitions) seen so far, where each $F[i]$ contains how many times the item $i$ has been so far.  We saw that CM-sketches provide a FPTAS $F'[i]$ such that $F[i] \le F'[i] \le F[i] + \epsilon  ||F||$, where the latter inequality holds with probability at least $1 - \delta$. 
+
+\section{Solution}
+
+Before explaining the solution to the problem, we introduce the \textit{Heavy Hitters} problem and how the \textit{Count-Min Sketch} data structure solves it.
+
+\subsection{Heavy Hitters}
+
+What is the Heavy Hitters problem?
+
+\subsection{Count-Min Sketch}
+
+Describe the Count-Min Sketch solution and how does it work.
+
+\end{document}

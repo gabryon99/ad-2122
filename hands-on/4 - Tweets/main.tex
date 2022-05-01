@@ -1,0 +1,95 @@
+% !TeX program = lualatex
+
+\documentclass{article}
+\usepackage[a4paper, total={5.5in, 10in}]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage[english]{babel}
+\usepackage{amsthm}
+\usepackage{calrsfs}
+\usepackage{lmodern}%get scalable font
+\usepackage{titling}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{fontspec}
+\usepackage{lstfiracode}
+
+% Define command for show :=
+\newcommand{\defeq}{\vcentcolon=}
+% Set font family
+\fontfamily{qpl}\selectfont 
+% Calligraphic H
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\newcommand{\Hb}{\pazocal{H}}
+\newcommand{\Bb}{\pazocal{B}}
+
+\newcommand*{\QEDB}{\null\nobreak\hfill\ensuremath{\square}}
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition*}[theorem]{Definition}
+
+\title{Fourth hands-on: Tweets \\[1ex] \large Algorithm Design (2021/2022)}
+\author{Gabriele Pappalardo\\Email: g.pappalardo4@studenti.unipi.it\\Department of Computer Science}
+\date{March 2022}
+
+\pretitle{
+    \begin{center}
+    \LARGE
+    \includegraphics[width=5cm]{/Users/gabryon/Projects/Papers/AD-21-22/assets/images/unipi.png}\\
+}
+\posttitle{
+    \end{center}
+}
+
+\setmonofont{FiraCode}[
+    Scale=0.85,
+    Contextuals=Alternate % Activate the calt feature
+]
+
+\lstset{
+    style=FiraCodeStyle,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                
+    showspaces=false,                
+    showstringspaces=false,
+    basewidth=0.6em,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    basicstyle=\ttfamily, % Use \ttfamily for source code listings
+    commentstyle=\color{ForestGreen}
+}
+
+\setcounter{section}{0}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Given a stream of Tweets collected using Twitter, answer to these questions:
+\begin{itemize}
+    \item Count the percentage of happy users in the different moments of the day (morning, afternoon, evening, night). Discuss what you find if compute also the percentage of unhappy users. Do the two percentages sum to 100\%? Why?
+    
+    \item Spell the 30 favorite words of happy users.
+    
+    \item Find the number of distinct words used by happy users. How could we exclude words repeated only once?
+
+    \item Decide if, in general, happy messages are longer or shorter than unhappy messages.
+
+    
+\end{itemize}
+
+\section{Solution}
+
+TODO.
+
+\end{document}
