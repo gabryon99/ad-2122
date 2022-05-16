@@ -1,0 +1,99 @@
+% !TeX program = lualatex
+
+\documentclass{article}
+\usepackage[a4paper, total={5.5in, 10in}]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage[english]{babel}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{calrsfs}
+\usepackage{lmodern}%get scalable font
+\usepackage{titling}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{fontspec}
+\usepackage{lstfiracode}
+
+% Define command for show :=
+\newcommand{\defeq}{\vcentcolon=}
+% Set font family
+\fontfamily{qpl}\selectfont 
+% Calligraphic H
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\newcommand{\Hb}{\pazocal{H}}
+\newcommand{\Bb}{\pazocal{B}}
+
+\newcommand*{\QEDB}{\null\nobreak\hfill\ensuremath{\square}}
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition*}[theorem]{Definition}
+
+\title{Ninth hands-on: Game Theory I\\[1ex] \large Algorithm Design (2021/2022)}
+\author{Gabriele Pappalardo\\Email: g.pappalardo4@studenti.unipi.it\\Department of Computer Science}
+\date{April 2022}
+
+\pretitle{
+    \begin{center}
+    \LARGE
+    \includegraphics[width=5cm]{/Users/gabryon/Projects/Papers/AD-21-22/assets/images/unipi.png}\\
+}
+\posttitle{
+    \end{center}
+}
+
+\setmonofont{FiraCode}[
+    Scale=0.85,
+    Contextuals=Alternate % Activate the calt feature
+]
+
+\lstset{
+    style=FiraCodeStyle,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                
+    showspaces=false,                
+    showstringspaces=false,
+    basewidth=0.6em,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    basicstyle=\ttfamily, % Use \ttfamily for source code listings
+    commentstyle=\color{ForestGreen}
+}
+
+
+\setcounter{section}{0}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\subsection{Problem 1: Diabolik}
+
+After Diabolik's capture, Inspector Ginko is forced to free him because the judge, scared of Eva Kant's revenge, has acquitted him with an excuse. 
+Outraged by the incident, the mayor of Clerville decides to introduce a new legislation to make judges personally liable for their mistakes. 
+The new legislation allows the accused to sue the judge and have him punished in case of error. Consulted on the subject, 
+Ginko is perplexed and decides to ask you to provide him with a formal demonstration of the correctness/incorrectness of this law. 
+
+
+\subsection{Problem 2: Investement Agency}
+
+An investment agency wants to collect a certain amount of money for a project. Aimed at convincing all the members of a group of N people 
+to contribute to the fund, it proposes the following contract: each member can freely decide either to contribute with $100$ euros or not 
+to contribute (retaining money on its own wallet). Independently on this choice, after one year, the fund will be rewarded with an interest of 50\% 
+and uniformly redistributed among all the $N$ members of the group. Describe the game and find the Nash equilibrium. 
+
+\section{Solution}
+
+
+
+\end{document}

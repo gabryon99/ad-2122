@@ -1,0 +1,114 @@
+% !TeX program = lualatex
+
+\documentclass{article}
+\usepackage[a4paper, total={5.5in, 10in}]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage[english]{babel}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{calrsfs}
+\usepackage{lmodern}%get scalable font
+\usepackage{titling}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{fontspec}
+\usepackage{lstfiracode}
+
+% Define command for show :=
+\newcommand{\defeq}{\vcentcolon=}
+% Set font family
+\fontfamily{qpl}\selectfont 
+% Calligraphic H
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
+\newcommand{\Hb}{\pazocal{H}}
+\newcommand{\Bb}{\pazocal{B}}
+
+\newcommand*{\QEDB}{\null\nobreak\hfill\ensuremath{\square}}
+
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition*}[theorem]{Definition}
+
+\title{Tenth hands-on: Game Theory II\\[1ex] \large Algorithm Design (2021/2022)}
+\author{Gabriele Pappalardo\\Email: g.pappalardo4@studenti.unipi.it\\Department of Computer Science}
+\date{May 2022}
+
+\pretitle{
+    \begin{center}
+    \LARGE
+    \includegraphics[width=5cm]{/Users/gabryon/Projects/Papers/AD-21-22/assets/images/unipi.png}\\
+}
+\posttitle{
+    \end{center}
+}
+
+\setmonofont{FiraCode}[
+    Scale=0.85,
+    Contextuals=Alternate % Activate the calt feature
+]
+
+\lstset{
+    style=FiraCodeStyle,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                
+    showspaces=false,                
+    showstringspaces=false,
+    basewidth=0.6em,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    basicstyle=\ttfamily, % Use \ttfamily for source code listings
+    commentstyle=\color{ForestGreen}
+}
+
+
+\setcounter{section}{0}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\subsection[]{Problem 1: Crossing Streets}
+
+Two players drive up to the same intersection at the same time. If both attempt to cross, the result is a fatal traffic accident. 
+The game can be modeled by a payoff matrix where crossing successfully has a payoff of $1$, not crossing pays $0$, while an accident costs $−100$.
+
+\begin{itemize}
+    \item Build the payoff matrix 
+    \item Find the Nash equilibria 
+    \item Find a mixed strategy Nash equilibrium 
+    \item Compute the expected payoff for one player (the game is symmetric) 
+\end{itemize}
+
+\subsection[]{Problem 2: Mixed strategy for Back Stravinsky Game}
+
+Find the mixed strategy and expected payoff for the Back Stravinsky game.
+
+\subsection[]{Problem 3: Children to Kindergartends}
+
+The Municipality of your city wants to implement an algorithm for the assignment of children to kindergartens that, on the one hand, takes into account 
+the desiderata of families and, on the other hand, reduces `city traffic caused by taking children to school. 
+Every school has a maximum capacity limit that cannot be exceeded under any circumstances.
+As a form of welfare the Municipality has established the following two rules:  
+
+\begin{enumerate}
+    \item in case of a child already attending a certain school, the sibling is granted the same school; 
+    \item families with only one parent have priority for schools close to the workplace.
+\end{enumerate}
+
+Model the situation as a stable matching problem and describe the payoff functions of the players. Question: what happens to twin siblings?  
+
+\section{Solution}
+
+TODO.
+
+\end{document}
