@@ -83,13 +83,21 @@ Given a stream of Tweets collected using Twitter, answer to these questions:
     
     \item Find the number of distinct words used by happy users. How could we exclude words repeated only once?
 
-    \item Decide if, in general, happy messages are longer or shorter than unhappy messages.
-
-    
+    \item Decide if, in general, happy messages are longer or shorter than unhappy messages.    
 \end{itemize}
 
 \section{Solution}
 
-TODO.
+The solution for the first point uses one linear counter for each moment of the day. Thus, we are going to have a total of four counters for the happy users, and other four for the unhappy ones. If we sum the obtained percentages we could obtain
+a 100\% under certain conditions, that is, a user should post only a tweet. Otherwise, we could never obtain the 100\% since the mood
+of a user could change during the day (see the user \textit{@missbrandii}, he/she has three negative tweets and a positive one inside the \verb+sample.csv+ dataset.). \newline
+
+\noindent In order to spell the 30 favorite words of happy users we can use the \textit{space saving algorithm}, and query the table at the
+end for the first 30 words. \newline
+
+\noindent To find the distinct words used by happy users, we thought to use a LogLog counter with a Bloom Filter.\newline
+
+\noindent The fourth point can be solved using several approaches, we used the \textit{median} as indicator. In the \verb+mini.csv+ and \verb+sample.csv+ datasets, the negatives messages are longer than the positives ones.
+Instead, using the \textit{mean} as indicator, in the \verb+mini.csv+ dataset, positive messages are longer.
 
 \end{document}
