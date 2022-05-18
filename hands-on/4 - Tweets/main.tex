@@ -92,10 +92,35 @@ The solution for the first point uses one linear counter for each moment of the 
 a 100\% under certain conditions, that is, a user should post only a tweet. Otherwise, we could never obtain the 100\% since the mood
 of a user could change during the day (see the user \textit{@missbrandii}, he/she has three negative tweets and a positive one inside the \verb+sample.csv+ dataset.). \newline
 
-\noindent In order to spell the 30 favorite words of happy users we can use the \textit{space saving algorithm}, and query the table at the
+\noindent In order to spell the 30 favorite words of happy users we can use the \textit{space saving algorithm}, seen during the lecutres, and query the table at the
 end for the first 30 words. \newline
 
-\noindent To find the distinct words used by happy users, we thought to use a LogLog counter with a Bloom Filter.\newline
+\noindent To find the distinct words used by happy users, we thought to use a LogLog counter combined with a Bloom Filter.
+The LogLog counter is suitable to count distinct elements. Thus, to understand if a word is repeated only once we use a Bloom Filter in the following way:
+\begin{enumerate}
+\item Set the bit of the hashed value to 1;
+\item If the bit was set to 1, then it means we already saw that word and therefore we count it using the LogLog counter.
+\end{enumerate}
+A pseudo Python code solution is shown Listing \ref{lst:third}.
+
+\begin{lstlisting}[language=Python,caption="Pseudo-Code for the third point",label={lst:third}]
+def count_distinct_words(s: Stream) -> Int:
+    
+    counter = HyperLogLogCounter(...)
+    filter = BloomFilter(...)
+
+    word = s.next()
+
+    while word is not None:
+        if not filter.is_set(word):
+            filter.set(word)
+        else:
+            counter.add(word)
+        word = s.next()
+    
+    return counter.count()
+
+\end{lstlisting}
 
 \noindent The fourth point can be solved using several approaches, we used the \textit{median} as indicator. In the \verb+mini.csv+ and \verb+sample.csv+ datasets, the negatives messages are longer than the positives ones.
 Instead, using the \textit{mean} as indicator, in the \verb+mini.csv+ dataset, positive messages are longer.
