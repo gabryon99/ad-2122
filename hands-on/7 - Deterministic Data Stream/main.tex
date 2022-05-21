@@ -95,6 +95,36 @@ namely, the next item to be read. Since any algorithm must be correct for any in
 
 \section{Solution}
 
-TODO.
+Our main goal is to find two streams $S_1$ and $S_2$ such that $\textrm{mostFreq}(S_1) \ne \textrm{mostFreq}(S_2)$, 
+but for the algorithm $A$ we have $A(S_1) = A(S_2)$. To do that, we take a universe of elements $U$ and its subsets $\Sigma_i \subseteq U$ such
+that they have cardinality $|\Sigma_i| = \frac{|U|}{2}$ and $\forall i, j, i \ne j$ they satisfy the following properties:
+\begin{enumerate}
+    \item $|\Sigma_i \cap \Sigma_j| \ge 1$: have at least one element in common;
+    \item $|\Sigma_i \setminus \Sigma_j| \ge 1$: at least one character differ int both sets.
+\end{enumerate}
+
+\noindent How many subsets satisfy the requesting criteria? We use the binomial coefficient to discover that are:
+\begin{equation}
+    \binom{|U|}{\frac{|U|}{2} + 1} \simeq 2^{|U|} > f(k)
+\end{equation}
+sets possible. Note that if the cardinality of $U$ is big then the number of sets will be exponentially large!\\
+
+\noindent Therefore, $\exists S_i \in \Sigma_{i}^*, S_j \ in \Sigma_{j}^{*}, S_i \ne S_j$ streams that are indistinguishable for the algorithm $A$
+These two streams are build as shown below:
+
+\begin{align}
+S_i = s_1^{(i)}s_2^{(i)}s_3^{(i)} \dots s_{\frac{|U|}{2}}^{(i)} \\
+S_j = s_1^{(j)}s_2^{(j)}s_3^{(j)} \dots s_{\frac{|U|}{2}}^{(j)}
+\end{align}
+
+\noindent Now, if we pick an element $x \in |\Sigma_i \setminus \Sigma_j|$ and $y \in |\Sigma_j \setminus \Sigma_i|$ and we concatenate them to 
+the streams $S_i, S_j$ obtaining $S_ixy$ and $S_jxy$. Giving these two streams to $A$ we have $A(S_i xy) = A(S_j xy)$ because $S_i$ and $S_j$ are
+indistinguishable for $A$. But:
+
+\begin{align*}
+    \textrm{mostFreq}(S_i xy) \ne \textrm{mostFreq}(S_j xy) \\
+    x \ne y
+\end{align*}
+and, therefore, $A$ fails.
 
 \end{document}
