@@ -147,44 +147,36 @@ up to $i$.
 $O(m \log m)$ space to store the entire array of prefix sums.\\
 
 \noindent To achieve the requested space $O(m)$ we sample the prefix sums array $P$ and we create a new lookup table $T$, described below. First, we have to determine how many samples
-of the prefix sums we do need. We are going to need $\log m$ samples of prefix sums. Second, how do we build $T$? We define $L = \frac{\log m}{2}$, and we split the bit array $B$
+of the prefix sums we do need. We are going to need $2 * \log m$ samples of prefix sums. Second, how do we build $T$? We define $L = \frac{\log m}{2}$, and we split the bit array $B$
 in $L$ parts. Splitting the bit array leave us with $L$ portions, that we can use to index our lookup table $T$. 
-How many string of bits can be represented using $L$ bits? That is, how many rows $T$ will need? $\#\textrm{rows} = 2^L$.
+How many string of bits can be represented using $L$ bits? That is, how many rows $T$ will have? $\#\textrm{rows} = 2^L$.
 
 \begin{equation}
     \textrm{\#rows} = 2^L = 2^{\frac{\log m}{2}} = (2^{\log m})^{\frac{1}{2}} = \sqrt m
 \end{equation}
 
-\noindent We need $\sqrt m$ rows for $T$. How many columns do we need? $\# \textrm{columns} = \log m$. Therefore, our lookup table $T$ will have a size of $\sqrt m \log m$. Assuming we have a bit array of size 
+\noindent We need $\sqrt m$ rows for $T$. How many columns do we need? $\# \textrm{columns} = L = \frac{\log m}{2}$. Therefore, our lookup table $T$ will have a size of $\sqrt m \frac{\log m}{2}$. Assuming we have a bit array of size 
 $m = 16$, then the lookup table will looks like as shown below.
 
 \begin{align}
      \begin{matrix}
-         (0 & 0 & 0 & 0)_2 \\
-         (0 & 0 & 0 & 1)_2 \\
-         (0 & 0 & 1 & 0)_2 \\
-         (0 & 0 & 1 & 1)_2 \\
-         (0 & 1 & 0 & 0)_2 \\
-         \dots & \dots & \dots & \dots \\
-         (1 & 1 & 1 & 0)_2 \\
-         (1 & 1 & 1 & 1)_2
+         (0 & 0)_2 \\
+         (0 & 1)_2 \\
+         (1 & 0)_2 \\
+         (1 & 1)_2 
      \end{matrix} \;
      T = 
      \begin{bmatrix}
-        0 & 0 & 0 & 0 \\
-        0 & 0 & 0 & 1 \\
-        0 & 0 & 1 & 1 \\
-        0 & 0 & 1 & 2 \\
-        0 & 1 & 1 & 1 \\
-        \dots & \dots & \dots & \dots \\
-        1 & 2 & 3 & 3 \\
-        1 & 2 & 3 & 4
+        0 & 0 \\
+        0 & 1 \\
+        1 & 1 \\
+        1 & 2
     \end{bmatrix} 
 \end{align}
 
 \noindent Our lookup table will contains the partial sums of each of the $L$ possible portions as shown in Equation 4. At the end, to compute the rank function we are going to need
-both prefix sums sample and the lookup table $T$. How much space are we using? We are keeping $\log m$ samples of prefix sums, which takes up to $O(\log m)$ bits, therefore $O(\log m \log m)$.
-Plus, for $T$ we are using $\sqrt m$ rows and $\log m$ columns, and for each cell we need $O(\log \log m)$ bits, thus $O(\sqrt{m}\log m (\log m \log m))$ bits.
+both prefix sums sample and the lookup table $T$. How much space are we using? We are keeping $O(\log m)$ samples of prefix sums, which takes up to $O(\log m)$ bits, therefore $O((\log{m})^2)$.
+Plus, for $T$ we are using $\sqrt m$ rows and $\log m$ columns, and for each cell we need $O(\log \log m)$ bits, thus $O(\sqrt{m}\log m (\log \log m))$ bits.
 
 \begin{lstlisting}[language=C,caption=`Rank function implemented using a bit array of 16 elements.']
     uint16_t rank(uint16_t B, uint16_t j) {
@@ -209,6 +201,6 @@ Plus, for $T$ we are using $\sqrt m$ rows and $\log m$ columns, and for each cel
     }
 \end{lstlisting}
 
-\noindent At the end we have $O((\log m)^2) + O(\sqrt{m}\log m (\log m \log m)) = O(m)$ total bits.
+\noindent At the end we have $O((\log m)^2) + O(\sqrt{m}\log m (\log \log m)) = O(m)$ total bits.
 
 \end{document}
