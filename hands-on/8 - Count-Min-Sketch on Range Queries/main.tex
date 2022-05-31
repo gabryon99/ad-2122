@@ -1,7 +1,7 @@
 % !TeX program = lualatex
 
 \documentclass{article}
-\usepackage[a4paper, total={5.5in, 10in}]{geometry}
+\usepackage[a4paper, total={6in, 10in}]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage{mathtools}
 \usepackage[english]{babel}
@@ -16,6 +16,8 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage{fontspec}
 \usepackage{lstfiracode}
+\usepackage{tikz}
+\usetikzlibrary{trees}
 
 % Define command for show :=
 \newcommand{\defeq}{\vcentcolon=}
@@ -29,9 +31,10 @@
 \newcommand*{\QEDB}{\null\nobreak\hfill\ensuremath{\square}}
 
 
-\newtheorem{theorem}{Theorem}[section]
+\newtheorem{theorem}{Theorem}
 \newtheorem{corollary}{Corollary}[theorem]
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{fact}[theorem]{Fact}
 \newtheorem{definition*}[theorem]{Definition}
 
 \title{Eight hands-on: Count-min sketch: range queries\\[1ex] \large Algorithm Design (2021/2022)}
@@ -77,18 +80,250 @@
 
 \section{Introduction}
 
-Consider the counters $F[i]$ for $1 \le i \le n$, where $n$ is the number of items in the stream of any length. At any time, we know that $|| F ||$ is the total number of items (with repetitions) seen so far, where each $F[i]$ contains how many times the item $i$ has been so far.  We saw that CM-sketches provide a FPTAS $F'[i]$ such that $F[i] \le F'[i] \le F[i] + \epsilon  ||F||$, where the latter inequality holds with probability at least $1 - \delta$. 
+Consider the counters $F[i]$ for $1 \le i \le n$, where $n$ is the number of items in the stream of any length. 
+At any time, we know that $|| F ||$ is the total number of items (with repetitions) seen so far, where each 
+$F[i]$ contains how many times the item $i$ has been so far.  
+We saw that CM-sketches provide a FPTAS $F'[i]$ such that $F[i] \le F'[i] \le F[i] + \epsilon  ||F||$, 
+where the latter inequality holds with probability at least $1 - \delta$.\newline
+
+\noindent Consider now a range query $(a,b)$, where we want $F_{ab} = \sum_{a \le i \le b} F[i]$. Show how to adapt CM-sketch so that a FPTAS $F'_{ab}$ is provided: 
+
+\begin{itemize}
+    \item Baseline is $\sum_{a \le i \le b} F'[i]$, but this has drawbacks as both time and error grows with $b-a+1$.
+    \item Consider how to maintain counters for just the sums when $b-a+1$ is any power of $2$ (less or equal to $n$):
+    \begin{itemize}
+        \item Can we now answer quickly also when $b-a+1$ is not a power of two? 
+        \item Can we reduce the number of these power-of-2 intervals from $n \log n$ to $2n$?
+        \item Can we bound the error with a certain probability? \textit{Suggestion}: it does not suffices to say that it is at most $\delta$ 
+        the probability of error of each individual counter; while each counter is still the actual wanted value plus the residual as before, 
+        it is better to consider the sum $V$ of these wanted values and the sum $X$ of these residuals, and apply Markov’s inequality to $V$ and $X$ 
+        rather than on the individual counters.  
+    \end{itemize} 
+\end{itemize}
 
 \section{Solution}
 
-Before explaining the solution to the problem, we introduce the \textit{Heavy Hitters} problem and how the \textit{Count-Min Sketch} data structure solves it.
+\subsection{Baseline Solution}
 
-\subsection{Heavy Hitters}
+The baseline solution is easy to implement: we can use a \verb+for+ loop starting from the element $a$ up to $b$ and sum
+all the counters. Since each counter has some error, if we sum up all the counter in a large range,
+then also the final error will grow linearly as large as the range, that is $b - a + 1$.
 
-What is the Heavy Hitters problem?
+\begin{lstlisting}[language=Python,caption=`Range query for integer values']
+def range(F: CountMinSketch, a: int, b: int): int:
+    sum = 0
+    for i in range(a, b + 1):
+        sum += F[i]
+    return sum
+\end{lstlisting}
 
-\subsection{Count-Min Sketch}
+\subsection{Requested Solution}
 
-Describe the Count-Min Sketch solution and how does it work.
+\noindent We can improve the baseline solution, using the powers of two. In fact, any range $(a, b)$ can be
+expressed as disjoint union of length with the powers of two, e.g., if we have the range $(4, 10)$:
+$$
+(4, 10) = (4) \cup (5, 8) \cup (9, 10)
+$$
+
+\noindent We can state the following fact that will allow us to compute all the possible range queries.
+
+\begin{fact}[Dyadic Ranges]
+    Any range in the interval from $1$ to $n$ is expressible as the disjoint union of $2 \log n$ intervals 
+    in the set of dyadic ranges.
+\end{fact}
+
+\noindent Therefore, given an universe $U$ we can build a collection of \textit{dyadic ranges}, and we will
+need at most $2n$ of them. Having these ranges, we can bound the error of the range query up to $\log n$, thus a
+logarithmic error.
+
+\begin{equation*}
+    F_{ab} \le \tilde{F}_{ab} \le F_{ab} + 2 \epsilon \log{n} ||F||
+\end{equation*}
+
+\noindent This can be achieved using $\log n$ Count-Min Sketches. We build a ``logic'' binary tree where each range is splitted in two parts.
+Starting from the root we represent the range $(1, n)$ and going down we will have $(1, n/2)$ and $(n/2 + 1)$. We repeat the splitting process
+until we are not able to do so anymore, that is, when we obtain $n$ ranges of the form $(1,1), (2, 2), (3, 3), \dots, (n-1, n-1), (n, n)$.
+In each level of this ``logic'' binary tree we add a new Count-Min Sketch, having in total $\log n$ sketches.
+
+\begin{figure}[htp]
+    \centering
+    \begin{tikzpicture}[
+        level distance=1.5cm, 
+        level 1/.style={sibling distance=8cm}, 
+        level 2/.style={sibling distance=4cm}, 
+        level 3/.style={sibling distance=2cm},
+        level 4/.style={sibling distance=1cm}
+    ]
+        \node {(1, 16)}
+            child {
+                node {(1, 8)}
+                child {
+                    node {(1, 4)}
+                    child {
+                        node {(1, 2)}
+                        child {node {(1)}}
+                        child {node {(2)}}
+                    }
+                    child {
+                        node {(3, 4)}
+                        child {node {(3)}}
+                        child {node {(4)}}
+                    }
+                }
+                child {
+                    node {(5, 8)}
+                    child {
+                        node {(5, 6)}
+                        child {node {(5)}}
+                        child {node {(6)}}
+                    }
+                    child {
+                        node {(7, 8)}
+                        child {node {(7)}}
+                        child {node {(8)}}
+                    }
+                }
+            }
+            child {
+                node {(9, 16)}
+                child {
+                    node {(9, 12)}
+                    child {
+                        node {(9, 10)}
+                        child {node {(9)}}
+                        child {node {(10)}}
+                    }
+                    child {
+                        node {(11, 12)}
+                        child {node {(11)}}
+                        child {node {(12)}}
+                    }
+                }
+                child {
+                    node {(13, 16)}
+                    child {
+                        node {(13, 14)}
+                        child {node {(13)}}
+                        child {node {(14)}}
+                    }
+                    child {
+                        node {(15, 16)}
+                        child {node {(15)}}
+                        child {node {(16)}}
+                    }
+                }
+            };
+    \end{tikzpicture}
+    \caption{Generated ranges using $n = 16$.}
+\end{figure}
+   
+\noindent When we habe to update a counter, we traverse the tree updating the counters for each traversed range.
+For instance, if we have to update the counter for the element $7$ in Figure 1, we are going to update the counters
+in each range containing the element, that are: $(1, 16), (1, 8), (5, 8), (7, 8), (7)$. 
+The \verb+update+ operation takes $O(\log n)$ time, the pseudo-Python code is shown in Listing ?.
+
+\begin{lstlisting}[language=python]
+def update(x: int) -> None:
+    # The first range to update is the root
+    range = (1, n)
+    level = 1
+    # When the range has size one we stop
+    while range != (x, x):
+        # Update the CMS in the current level
+        update(CMSS[level], range) 
+        # Go a level below in the logical tree
+        level += 1 
+        # Compute the new range to update
+        if x in (range[0], int(range[1]/2)):
+            range = (range[0], int(range[1] / 2))
+        else:
+            range = (int(range[0] / 2) + 1, range[1])
+    return
+\end{lstlisting}
+
+\noindent The \verb+query+ operation relies on \textbf{Fact} 1, also this computation takes $O(\log n)$ time. 
+We have to select each dyadic range needed to build the original range.
+
+\begin{lstlisting}[language=python]
+def query(r: (int, int)) -> int:
+    sum = 0
+    # Assuming we have a function that computes
+    # dyadic ranges.
+    ranges = dyadicRanges(r)
+    # Query each CMS in the respective level with
+    # the computed ranges
+    for (level, range) in ranges:
+        sum += query(CMSS[level], range)
+    return 0
+\end{lstlisting}
+
+\subsection{Bounding the error}
+
+The error analysis will require some definitions to work with. First, we are going to define the set of dyadic ranges as:
+\begin{equation*}
+    D = \{(1, n), (1, {n}/{2}), ({n}/{2} + 1, n), \dots, (1, 1), (2, 2), \dots, (n, n)\}, |D| = 2n
+\end{equation*}
+
+\noindent The analysis makes use of just one Count-Min Sketch and it is restricted to the ranges contained in the set $D$. Therefore,
+we express the counter $F_{ab}$ as $F_{(a, b)}$ where the range $(a, b) \in D$. The approximate counter $\tilde{F}_{(a, b)}$ is obtained
+as follows in Equation 1.
+
+\begin{equation}
+    \tilde{F}_{(a, b)} = F_{(a, b)} + \sum_{(\alpha, \beta) \in D,(\alpha, \beta) \ne (a, b)} X_{(\alpha, \beta)}
+\end{equation}
+
+\noindent The random variable $X_{(a, b)}$ is a value representing the ``garbage''. We would like to know the expected value of this random variable.
+To do so, we define a new indicator random variable, as seen during the lectures:
+\begin{equation*}
+    I_{j,i,k} = \begin{cases}
+        1 & h_j(i) = h_j(k) \\
+        0 & \textrm{othwerwise}
+    \end{cases} \; i, k \in D, j \in [d]
+\end{equation*}
+
+\noindent Therefore, when the $j$-th hash function has a collision with different ranges in $D$ the variable will be set to $1$. 
+Fixed a $j \in [d]$ and given an $i \in D$ we can define $X_{i}^{(j)}$ as: 
+
+\begin{equation*}
+    X_{i}^{(j)} = \sum_{k \in D, k \ne i}I_{j, i, k} \cdot  F_k
+\end{equation*}
+
+\noindent We can compute its expectation as follows:
+
+\begin{equation*}
+    \begin{split}
+        E\big[X_{i}^{(j)}\big] & = E\bigg[\sum_{k \in D, k \ne i}I_{j, i, k} F_k\bigg] \\
+        & = \sum_{k \in D, k \ne i} E[I_{j, i, k} \cdot F_k] = 
+            \sum_{k \in D, k \ne i} \textrm{Pr}(\{I_{j, i, k} = 1\}) F_k \\
+        & = \sum_{k \in D, k \ne i} \frac{\epsilon}{e} \cdot  F_k = 
+             2n \frac{\epsilon}{e} \sum_{k \in D, k \ne i} 
+        \le 2n \frac{\epsilon}{e} ||F||
+    \end{split}
+\end{equation*}
+
+\noindent Knowing that $E\big[X_{i}^{(j)}\big] \le 2n \frac{\epsilon}{e} ||F||$, we can bound the error probability using the Markov's inequality:
+
+\begin{gather*}
+    \textrm{Pr}(\tilde{F}_{(a, b)} \ge F_{(a, b)} + 2\epsilon n ||F||) \le \delta \iff \\
+    \textrm{Pr}\bigg(F_{(a, b)} + \sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge F_{(a, b)} + 2 \epsilon n ||F|| \bigg) \le \delta \iff \\
+    \textrm{Pr}\bigg(\sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge 2 \epsilon n ||F||\bigg) \le \frac{E\bigg[\sum X_(\alpha, \beta)\bigg]}{2 \epsilon n ||F||} = \frac{2n \frac{\epsilon}{e} ||F||}{2 \epsilon n ||F||} = \frac{1}{e}
+\end{gather*}
+
+\subsection{A slightly precise analysis}
+
+A precise analys should involve the fact that the ``queryable'' ranges are not only the dyadic ones. If we use more than one Count-Min Sketch as explained 
+in subsection 2.2 we could obtain a more precise analysis on the error bound. With calculations similar to the ones above we would obtain that:
+
+\begin{equation*}
+    E\big[X_{i}^{(j)}\big] \le 2 \log n \frac{\epsilon}{e} ||F||
+\end{equation*}
+
+\noindent Therefore, the error probability will remain the same:
+
+\begin{gather*}
+    \textrm{Pr}(\tilde{F}_{(a, b)} \ge F_{(a, b)} + 2\epsilon \log n ||F||) \le \delta \iff \\
+    \textrm{Pr}\bigg(F_{(a, b)} + \sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge F_{(a, b)} + 2 \epsilon \log n ||F|| \bigg) \le \delta \iff \\
+    \textrm{Pr}\bigg(\sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge 2 \epsilon n ||F||\bigg) \le \frac{E\bigg[\sum X_(\alpha, \beta)\bigg]}{2 \epsilon \log n ||F||} = \frac{2 \log n \frac{\epsilon}{e} ||F||}{2 \epsilon \log n ||F||} = \frac{1}{e}
+\end{gather*}
 
 \end{document}
