@@ -94,7 +94,7 @@ where the latter inequality holds with probability at least $1 - \delta$.\newlin
     \begin{itemize}
         \item Can we now answer quickly also when $b-a+1$ is not a power of two? 
         \item Can we reduce the number of these power-of-2 intervals from $n \log n$ to $2n$?
-        \item Can we bound the error with a certain probability? \textit{Suggestion}: it does not suffices to say that it is at most $\delta$ 
+        \item Can we bound the error with a certain probability? \textit{Suggestion}: it does not suffice to say that it is at most $\delta$ 
         the probability of error of each individual counter; while each counter is still the actual wanted value plus the residual as before, 
         it is better to consider the sum $V$ of these wanted values and the sum $X$ of these residuals, and apply Markov’s inequality to $V$ and $X$ 
         rather than on the individual counters.  
@@ -132,15 +132,15 @@ $$
     in the set of dyadic ranges.
 \end{fact}
 
-\noindent Therefore, given an universe $U$ we can build a collection of \textit{dyadic ranges}, and we will
-need at most $2n$ of them. Having these ranges, we can bound the error of the range query up to $\log n$, thus a
+\noindent Therefore, given a universe $U$ we can build a collection of \textit{dyadic ranges}, and we will
+need at most $2n$ of them. Having these ranges, we can bind the error of the range query up to $\log n$, thus a
 logarithmic error.
 
 \begin{equation*}
     F_{ab} \le \tilde{F}_{ab} \le F_{ab} + 2 \epsilon \log{n} ||F||
 \end{equation*}
 
-\noindent This can be achieved using $\log n$ Count-Min Sketches. We build a ``logic'' binary tree where each range is splitted in two parts.
+\noindent This can be achieved using $\log n$ Count-Min Sketches. We build a ``logic'' binary tree where each range is split in two parts.
 Starting from the root we represent the range $(1, n)$ and going down we will have $(1, n/2)$ and $(n/2 + 1)$. We repeat the splitting process
 until we are not able to do so anymore, that is, when we obtain $n$ ranges of the form $(1,1), (2, 2), (3, 3), \dots, (n-1, n-1), (n, n)$.
 In each level of this ``logic'' binary tree we add a new Count-Min Sketch, having in total $\log n$ sketches.
@@ -217,7 +217,7 @@ In each level of this ``logic'' binary tree we add a new Count-Min Sketch, havin
     \caption{Generated ranges using $n = 16$.}
 \end{figure}
    
-\noindent When we habe to update a counter, we traverse the tree updating the counters for each traversed range.
+\noindent When we have to update a counter, we traverse the tree updating the counters for each traversed range.
 For instance, if we have to update the counter for the element $7$ in Figure 1, we are going to update the counters
 in each range containing the element, that are: $(1, 16), (1, 8), (5, 8), (7, 8), (7)$. 
 The \verb+update+ operation takes $O(\log n)$ time, the pseudo-Python code is shown in Listing ?.
@@ -264,7 +264,7 @@ The error analysis will require some definitions to work with. First, we are goi
     D = \{(1, n), (1, {n}/{2}), ({n}/{2} + 1, n), \dots, (1, 1), (2, 2), \dots, (n, n)\}, |D| = 2n
 \end{equation*}
 
-\noindent The analysis makes use of just one Count-Min Sketch and it is restricted to the ranges contained in the set $D$. Therefore,
+\noindent The analysis makes use of just one Count-Min Sketch, and it is restricted to the ranges contained in the set $D$. Therefore,
 we express the counter $F_{ab}$ as $F_{(a, b)}$ where the range $(a, b) \in D$. The approximate counter $\tilde{F}_{(a, b)}$ is obtained
 as follows in Equation 1.
 
@@ -272,7 +272,7 @@ as follows in Equation 1.
     \tilde{F}_{(a, b)} = F_{(a, b)} + \sum_{(\alpha, \beta) \in D,(\alpha, \beta) \ne (a, b)} X_{(\alpha, \beta)}
 \end{equation}
 
-\noindent The random variable $X_{(a, b)}$ is a value representing the ``garbage''. We would like to know the expected value of this random variable.
+\noindent The random variable $X_{(a, b)}$ is a value representing the ``garbage'' (according to the definition given in class). We would like to know the expected value of this random variable.
 To do so, we define a new indicator random variable, as seen during the lectures:
 \begin{equation*}
     I_{j,i,k} = \begin{cases}
@@ -301,7 +301,7 @@ Fixed a $j \in [d]$ and given an $i \in D$ we can define $X_{i}^{(j)}$ as:
     \end{split}
 \end{equation*}
 
-\noindent Knowing that $E\big[X_{i}^{(j)}\big] \le 2n \frac{\epsilon}{e} ||F||$, we can bound the error probability using the Markov's inequality:
+\noindent Knowing that $E\big[X_{i}^{(j)}\big] \le 2n \frac{\epsilon}{e} ||F||$, we can bind the error probability using the Markov's inequality:
 
 \begin{gather*}
     \textrm{Pr}(\tilde{F}_{(a, b)} \ge F_{(a, b)} + 2\epsilon n ||F||) \le \delta \iff \\
@@ -311,8 +311,8 @@ Fixed a $j \in [d]$ and given an $i \in D$ we can define $X_{i}^{(j)}$ as:
 
 \subsection{A slightly precise analysis}
 
-A precise analys should involve the fact that the ``queryable'' ranges are not only the dyadic ones. If we use more than one Count-Min Sketch as explained 
-in subsection 2.2 we could obtain a more precise analysis on the error bound. With calculations similar to the ones above we would obtain that:
+A precise analysis should involve the fact that the queried ranges are not only the dyadic ones. If we use more than one Count-Min Sketch as explained 
+in SubSection 2.2 we could obtain a more precise analysis on the error bound. With calculations similar to the ones above we would obtain that:
 
 \begin{equation*}
     E\big[X_{i}^{(j)}\big] \le 2 \log n \frac{\epsilon}{e} ||F||
