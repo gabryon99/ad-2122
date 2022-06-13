@@ -101,8 +101,8 @@ end for the first 30 words. \newline
 
 \subsection{Third Problem}
 
-\noindent To find the distinct words used by happy users, we thought to use a LogLog counter combined with a Bloom Filter.
-The LogLog counter is suitable to count distinct elements. Thus, to understand if a word is repeated only once we use a Bloom Filter in the following way:
+\noindent To find the distinct words used by happy users, we thought to use a LogLog counter (combined with a Bloom Filter for the second question).
+The LogLog counter is suitable to count distinct elements. Moreover, to understand if a word is repeated only once we use a Bloom Filter in the following way:
 \begin{enumerate}
 \item Set the bit of the hashed value to 1;
 \item If the bit was set to 1, then it means we already saw that word, and therefore we count it using the LogLog counter.
