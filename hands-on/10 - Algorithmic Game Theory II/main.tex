@@ -16,6 +16,7 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage{fontspec}
 \usepackage{lstfiracode}
+\usepackage{stmaryrd}
 
 % Define command for show :=
 \newcommand{\defeq}{\vcentcolon=}
@@ -108,6 +109,58 @@ As a form of welfare the Municipality has established the following two rules:
 Model the situation as a stable matching problem and describe the payoff functions of the players. Question: what happens to twin siblings?  
 
 \section{Solution}
+
+\subsection{Solution for `Crossing Streets'}
+
+The action set is build with two events $A= \{\textit{Cross}, \textit{Stop}\}$. With $D_i, i \in [1, 2]$ we define the i-th driver that is crossing the street.
+The payoff table is shown in Table \ref{tbl:payoff1}.
+
+\begin{table}[!h]
+    \label{tbl:payoff1}
+    \begin{center}
+        \begin{tabular}{l|l|l|}
+            \cline{2-3}
+            $D_1$ / $D_2$                  & Cross      & Stop \\ \hline
+            \multicolumn{1}{|l|}{Cross} & -100, -100 & 1, 0 \\ \hline
+            \multicolumn{1}{|l|}{Stop}  & 0,1        & 0, 0 \\ \hline
+            \end{tabular}
+    \end{center}
+    \caption{Payoff Table of Crossing Streets}
+\end{table}
+
+\noindent As we can see from the table, we have two Nash equilibria, which are the profiles: $(\textit{Cross}, \textit{Stop})$ and $(\textit{Stop}, \textit{Cross})$.\\
+
+\noindent To find the mixed strategies for this problem, we solve the following equations:
+
+\begin{align}
+    \begin{cases}
+        \mu_{D_1}(\textit{Cross})  = \mu_{D_1}(\textit{Stop}) \\
+        \mu_{D_2}(\textit{Cross})  = \mu_{D_2}(\textit{Stop})
+    \end{cases} \\
+    \iff
+    \begin{cases}
+        -100q + 1(1 - q) = 0 q + 0(1 - q) \\
+        -100p + 1(1 - p) = 0 p + 0(1 - p)
+    \end{cases} \\
+    \iff
+    \begin{cases}
+        q = \frac{1}{101} \\
+        p = \frac{1}{101}
+    \end{cases}
+\end{align}
+
+\noindent Since the game is symmetric, the expected payoff is equal for both players:
+
+\begin{align*}
+    E \llbracket \mu_{D_1} \rrbracket = E \llbracket \mu_{D_2} \rrbracket = pq(-100) + p(1- q)1 + (1- p)q0 + (1 - p)(1 - q)0 \\
+    = -100pq + p - qp = -101pq + p = p (1 - 101q) = p(1 - 101p) = 0
+\end{align*}
+
+\subsection{Solution for `Mixed Strategy for Back Stravinsky Game'}
+
+TODO.
+
+\subsection{Solution for `Children to Kindergartends'}
 
 TODO.
 
