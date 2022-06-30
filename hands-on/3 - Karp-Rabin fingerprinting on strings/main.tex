@@ -77,16 +77,18 @@
 
 \section{Introduction}
 
-Given a string $S \equiv S[0 \dots n - 1]$, and two positions $0 \le i < j \le n − 1$, the longest common extension \verb+lce(i, j)+ is the length of the maximal run of matching characters from those positions, namely: if $S[i] \ne S[j]$ then \verb+lce(i, j) = 0+; otherwise, \verb+lce(i, j)+ $= \max \{l \ge 1 : S[i \dots i + l − 1] = S[j \dots j + l − 1]\}$. For example, if $S$ = "\textit{abracadabra}", then \verb+lce(1, 2) = 0+, \verb+lce(0, 3) = 1+, and \verb+lce(0, 7) = 4+. Given $S$ in advance for preprocessing, build a data structure for $S$ based on the \textbf{Karp-Rabin} fingerprinting, in $O(n \log n)$ time, so that it supports subsequent online queries of the following two types: 
+Given a string $S \equiv S[0 \dots n - 1]$, and two positions $0 \le i < j \le n - 1$, the longest common extension \verb+lce(i, j)+ is the length of the maximal run of matching characters from those positions, namely: if $S[i] \ne S[j]$ then \verb+lce(i, j) = 0+; otherwise, \verb+lce(i, j)+ $= \max \{l \ge 1 : S[i \dots i + l − 1] = S[j \dots j + l − 1]\}$. For example, if $S$ = "\textit{abracadabra}", then \verb+lce(1, 2) = 0+, \verb+lce(0, 3) = 1+, and \verb+lce(0, 7) = 4+. Given $S$ in advance for preprocessing, build a data structure for $S$ based on the \textbf{Karp-Rabin} fingerprinting, in $O(n \log n)$ time, so that it supports subsequent online queries of the following two types: 
 
 \begin{itemize}
     \item \verb+lce(i,j)+: it computes the longest common extension at positions $i$ and $j$ in $O(\log n)$ time. 
-    \item \verb+equal(i,j,l)+: it checks if $S[i \dots i+l−1]=S[j \dots j+l{−}1]$ in constant time. 
+    \item \verb+equal(i,j,l)+: it checks if $S[i \dots i+l - 1]=S[j \dots j+l - 1]$ in constant time. 
 \end{itemize}
 
-\noindent Analyze the cost and the error probability. The space occupied by the data structure can be $O(n \log n)$ but it is possible to use $O(n)$ space.  
+\noindent Analyze the cost and the error probability. The space occupied by the data structure can be $O(n \log n)$, but it is possible to use $O(n)$ space.  
 
 \section{Solution}
+
+\subsection{Baseline solution}
 
 Before giving the requested solution, we start from the baseline one. The problem can be solved in $O(n^2)$ space with $O(1)$ time to compute the \verb+equal(i, j, l)+ and $O(\log n)$ time for the \verb+lce(i, j)+. The baseline solution makes use of a matrix $M \in \mathbb{Z}_p^{n \times n}$ where each cell contains the Karp-Rabin fingerprint $F_{ij}$.
 
@@ -106,7 +108,7 @@ Before giving the requested solution, we start from the baseline one. The proble
 
 \noindent To compute the \verb+equal(i, j, l)+ we will use the function \verb+equal(M, i, j, l)+ shown in the pseudo-Python code list \ref{lst:eq1}.
 
-\begin{lstlisting}[label={lst:eq1},caption="Function to compute the equality.",language=Python]
+\begin{lstlisting}[label={lst:eq1},caption=``Function to compute the equality.'',language=Python]
 def equal(M, i, j, l):
     
     # n is the length of the string
@@ -115,36 +117,41 @@ def equal(M, i, j, l):
 
     fi = M[i][i + l - 1]
     fj = M[j][j + l - 1]
+
     return (fi == fj)
 \end{lstlisting}
 
 \noindent To compute the \verb+lce(i, j, l)+ we will use the function \verb+lce(M, i, j, l)+ show in the pseudo-Python code list \ref{lst:lce1}.
 
-\begin{lstlisting}[label={lst:lce1},caption="Function to compute the longest common extension.",language=Python]
+\begin{lstlisting}[label={lst:lce1},caption=``Function to compute the longest common extension.'',language=Python]
 def lce(M, i, j, l):
     if l > 0:
         if equal(M, i, j, l):
-            return l + lce(i + l, j + l, l)
+            return l + lce(M, i + l, j + l, l)
         else:
-            return lce(i, j, l / 2)
+            return lce(M, i, j, l / 2)
     else:
         return 0
 \end{lstlisting}
 
-\noindent These two algorithms respect the requested running time. To reduce the space used by the matrix $M$, we can use just one row: the first one. The Karp-Rabin fingerprint of a sub-string $S[i \dots j], i < j$ is computed using the equation 2.
+\noindent These two algorithms respect the requested running time.
+
+\subsection{Improving space}
+
+To reduce the space used by the matrix $M$, we can use just one row, i.e. the first one. The Karp-Rabin fingerprint of a sub-string $S[i \dots j], i < j$ is computed using the equation 2.
 
 \begin{equation}
     F_{ij} = h(S) = \sum_{k = i}^{j} \textrm{ord}(S_k) \sigma^{k - i} \mod p
 \end{equation}
 
-\noindent Where $p$ is a prime number and $\textrm{ord}: \Sigma \to \mathbb{N}$ is a function converting a character belonging to the string alphabet to a natural number (e.g. the \verb+String.fromCharCode(...)+ function in JavaScript). The hash function can be viewed as a polynomial equation in $\mathbb{Z}[x]_p$ field, as shown in equation 3.
+\noindent Where $p$ is a prime number and $\textrm{ord}: \Sigma \to \mathbb{N}$ is a function converting a character belonging to the string alphabet to a natural number (e.g. the \verb+String.fromCharCode(...)+ function in JavaScript). The hash function can be viewed as a polynomial equation in $\mathbb{Z}[x]_p$ field, as shown in Equation 3 (using the Horner's method).
 
 \begin{align}
     F_{0n} = h(S) = \textrm{ord}(S_0) + \textrm{ord}(S_1) \sigma + \textrm{ord}(S_2) \sigma^2 + \dots + \textrm{ord}(S_{n-1}) \sigma^{n - 1} \mod p \\
     = \textrm{ord}(S_0) + \sigma(\textrm{ord}(S_1) + \sigma ( \textrm{ord}(S_2) + \dots + \sigma\textrm{ord}(S_{n - 1})))) \mod p
 \end{align}
 
-\noindent We can exploit the properties of this rolling hash function to compute the missing fingerprints that we removed from the matrix. In fact, given two indices, $i, j$ we can find its fingerprint $F_{ij}$, using only the first row of the matrix, in a mathematical way as shown in equation 5.
+\noindent We can exploit the properties of this rolling hash function to compute the missing fingerprints that we removed from the matrix. In fact, given two indices, $i, j$ we can find its fingerprint $F_{ij}$, using only the first row of the matrix, in a mathematical way as shown in Equation 5.
 
 \begin{equation}
     F_{ij} = ((F_{0j} - F_{0(i - 1)}) / \sigma^{i}) \mod p
@@ -166,8 +173,10 @@ def lce(M, i, j, l):
     F_{36} = (F_{06} - F_{02}) / \sigma^3 \mod p = S_3 + S_4 \sigma + S_5 \sigma^2  + S_6 \sigma^3 \mod p
 \end{flalign}
 
+\subsection{Error analysis}
+
 \noindent The error probability for the equal function is $\frac{1}{n^c}$. For the LCE function we have an error
-probability of $\frac{1}{n^c} \log n$
+probability of $\frac{1}{n^c} \log n$.
 
 % https://dev-notes.eu/2019/12/Fast-Modular-Exponentiation/
 
