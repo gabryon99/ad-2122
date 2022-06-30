@@ -95,7 +95,7 @@ The problem is composed in two parts:
 \subsection{Bloom Filter}
 
 A Bloom Filter is a probabilistic data structure, invented in 1970 by Burton Bloom, that allows to check wheter an element $x$ belongs to a set $S$ without storing it.
-A filter works with $k > 0$ hash functions $h_i: U \to [m]$ belongging to a universal hash family.
+A filter works with $k > 0$ hash functions $h_i: U \to [m]$ belonging to a universal hash family.
 
 \subsection{Estimate expected number of bits set}
 
@@ -108,7 +108,7 @@ We start defining a new random indicator variable $X_i$ such that:
     \end{cases}
 \end{equation}
 
-Therefore, we can be build a new random variable $Y = \sum_{i = 0}^{m - 1}X_i$ to estimate the number of bits set to one. We define $n = |S|$, as the unknown value to find. 
+\noindent Therefore, we can be build a new random variable $Y = \sum_{i = 0}^{m - 1}X_i$ to estimate the number of bits set to one. We define $n = |S|$, as the unknown value to find. 
 
 \begin{align*}
     E \llbracket Y \rrbracket = E \bigg\llbracket  \sum_{i = 0}^{m - 1}X_i \bigg\rrbracket = \sum_{i = 0}^{m - 1} E \llbracket X_i \rrbracket \\
@@ -117,7 +117,7 @@ Therefore, we can be build a new random variable $Y = \sum_{i = 0}^{m - 1}X_i$ t
     = m - m(1 - \frac{1}{m})^n \simeq m (1 - e^{-\frac{n}{m}})
 \end{align*}
 
-\noindent Knowing that $\mu = E \llbracket Y \rrbracket \simeq m (1 - e^{-\frac{n}{m}})$, we can solve the equation to find the cardinality of the original set $S$, which is $n$.
+\noindent Knowing that $\mu = E \llbracket Y \rrbracket \simeq m (1 - e^{-\frac{n}{m}})$, we can solve the equation to find the cardinality of the original set $S$, which is equal to $n$.
 
 \begin{align*}
     \mu \simeq m (1 - e^{-\frac{n}{m}}) \\
@@ -136,6 +136,8 @@ Therefore, we can be build a new random variable $Y = \sum_{i = 0}^{m - 1}X_i$ t
 The second point of the hands-on asks us to compute the rank of the bit array $B$, using only $O(m)$ bits of space. To reach the requested space complexity,
 we start off by the baseline solution, the one gave by the hint.\\
 
+\subsubsection{Baseline Solution}
+
 \noindent Prefix sums allow us to answer the rank function in constant time, in fact, we can build a new array $P$, that contains in each position $i$ the number of ones
 up to $i$.
 
@@ -146,17 +148,19 @@ up to $i$.
 \noindent Since the maximum prefix sum can be $|B| = m$ (when all the bits are set to $1$), we need $O(\log m)$ bits to store each sum, bringing us to use
 $O(m \log m)$ space to store the entire array of prefix sums.\\
 
+\subsubsection{Requested Solution}
+
 \noindent To achieve the requested space $O(m)$ we sample the prefix sums array $P$ and we create a new lookup table $T$, described below. First, we have to determine how many samples
-of the prefix sums we do need. We are going to need $2 * \log m$ samples of prefix sums. Second, how do we build $T$? We define $L = \frac{\log m}{2}$, and we split the bit array $B$
+of the prefix sums we do need. We are going to use $2 * \log m$ samples of prefix sums. Second, how do we build $T$? We define $L = \frac{\log m}{2}$, and we split the bit array $B$
 in $L$ parts. Splitting the bit array leave us with $L$ portions, that we can use to index our lookup table $T$. 
-How many strings of bits can be represented using $L$ bits? That is, how many rows $T$ will have? $\#\textrm{rows} = 2^L$.
+How many strings of bits can be represented using $L$ bits? That is, how many rows $T$ will have? Exactly: $\#\textrm{rows} = 2^L$.
 
 \begin{equation}
     \textrm{\#rows} = 2^L = 2^{\frac{\log m}{2}} = (2^{\log m})^{\frac{1}{2}} = \sqrt m
 \end{equation}
 
-\noindent We need $\sqrt m$ rows for $T$. How many columns do we need? $\# \textrm{columns} = L = \frac{\log m}{2}$. Therefore, our lookup table $T$ will have a size of $\sqrt m \frac{\log m}{2}$. Assuming we have a bit array of size 
-$m = 16$, then the lookup table will looks like as shown below.
+\noindent We need $\sqrt m$ rows for $T$. How many columns will have the table $T$? $\# \textrm{columns} = L = \frac{\log m}{2}$. Therefore, our lookup table $T$ will have a size of $\sqrt m \frac{\log m}{2}$. Assuming we have a bit array of size 
+$m = 16$, then the lookup table will look like as shown below.
 
 \begin{align}
      \begin{matrix}
@@ -174,9 +178,18 @@ $m = 16$, then the lookup table will looks like as shown below.
     \end{bmatrix} 
 \end{align}
 
-\noindent Our lookup table will contain the partial sums of each of the $L$ possible portions as shown in Equation 4. At the end, to compute the rank function we are going to need
-both prefix sums sample and the lookup table $T$. How much space are we using? We are keeping $O(\log m)$ samples of prefix sums, which takes up to $O(\log m)$ bits, therefore $O((\log{m})^2)$.
-Plus, for $T$ we are using $\sqrt m$ rows and $\log m$ columns, and for each cell we need $O(\log \log m)$ bits, thus $O(\sqrt{m}\log m (\log \log m))$ bits.
+\noindent Our table will contain the partial sums of each of the $L$ possible portions as 
+shown in Equation 4.\\
+
+\noindent At the end, to compute the rank function we are going to need
+both prefix sums samples and the lookup table $T$.
+
+\subsubsection{Space Complexity}
+
+We are keeping $O(\log m)$ samples of prefix sums, which takes up to $O(\log m)$ bits,
+therefore $O((\log{m})^2)$.
+Plus, for the lookup table $T$ we are using $\sqrt m$ rows and $\frac{\log m}{2}$ columns, and for each cell we
+need $O(\log \log m)$ bits, thus $O(\sqrt{m}\log m (\log \log m))$ bits.
 
 \begin{lstlisting}[language=C,caption=`Rank function implemented using a bit array of 16 elements.']
     uint16_t rank(uint16_t B, uint16_t j) {
@@ -201,6 +214,6 @@ Plus, for $T$ we are using $\sqrt m$ rows and $\log m$ columns, and for each cel
     }
 \end{lstlisting}
 
-\noindent At the end we have $O((\log m)^2) + O(\sqrt{m}\log m (\log \log m)) = O(m)$ total bits.
+\noindent At the end we have $O((\log m)^2) + O(\sqrt{m}\log m (\log \log m)) = o(m)$ total bits.
 
 \end{document}
