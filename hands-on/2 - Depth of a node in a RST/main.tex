@@ -50,7 +50,7 @@
 
 A \textbf{random binary search tree} for a set $S$ can be defined as follows: if $S$ is empty, then the null tree is a random search tree; otherwise, choose uniformly at random a key $k \in S$: the random search tree is obtained by picking $k$ as \textit{root}, and the random search trees on $L = \{x \in S : x < k\}$ and $R = \{x \in S : x > k\}$ become, respectively, the left and right subtrees of the root $k$.\\
 
-\noindent Consider the \textit{Randomized Quick Sort} (RQS) discussed in class and analysed with indicator variables, and observe that the random selection of the pivots follows the above process, thus producing a random search tree of $n$ nodes.\\
+\noindent Consider the \textit{Randomized Quick Sort} (RQS) discussed in class and analyzed with indicator variables, and observe that the random selection of the pivots follows the above process, thus producing a random search tree of $n$ nodes.
 
 \begin{itemize}
     \item Using a variation of the analysis with indicator variables $X_{ij}$, prove that the expected depth of a node (i.e. the random variable representing the distance of the node from the root) is nearly $2 \log n$. 
@@ -109,10 +109,10 @@ The analysis for the expected size of a subtree is similar to the previous one. 
 of a node exceeds $c 2 \log n$ is small for any given constant $c \ge 2$.
 
 \begin{align}
-    \textit{Pr}(\{D_i \ge c 2 \log n\}) \le e^{-\frac{\lambda^2}{2 \mu + \lambda}}
+    \textrm{\textbf{Pr}}(\{D_i \ge c 2 \log n\}) \le e^{-\frac{\lambda^2}{2 \mu + \lambda}}
 \end{align}
 
-Knowing that $\mu = E[D_i] \le 2 \log n$ we can derived $\lambda$:
+\noindent Knowing that $\mu = E[D_i] \le 2 \log n$ we can derive $\lambda$:
 
 \begin{align*}
     \mu + \lambda = c 2 \log n \\
@@ -120,10 +120,10 @@ Knowing that $\mu = E[D_i] \le 2 \log n$ we can derived $\lambda$:
     \lambda = c 2 \log n - E[D_i] \le c2 \log n - 2 \log n = \log n(2c - 2)
 \end{align*}
 
-Therefore, the Chernoff Bound becomes:
+\noindent Therefore, the Chernoff Bound becomes:
 
 \begin{align*}
-    \textit{Pr}(\{D_i \ge c 2 \log n\}) \le e^{-\frac{(\log n(2c - 2))^2}{2(2 \log n) + \log n(2c - 2)}} \\
+    \textrm{\textbf{Pr}}(\{D_i \ge c 2 \log n\}) \le e^{-\frac{(\log n(2c - 2))^2}{2(2 \log n) + \log n(2c - 2)}} \\
     = e^{-\frac{(\log n)^2 (2c-2)^2}{2(2 \log n) + \log n (2c - 2)}} \\
     = e^{-\frac{(\log n)^2 (2c-2)^2}{\log n (2c + 2)}} \\
     = e^{-\frac{\log n (2c-2)^2}{(2c + 2)}} \\
