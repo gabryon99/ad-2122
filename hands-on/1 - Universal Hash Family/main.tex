@@ -9,6 +9,8 @@
 \usepackage{calrsfs}
 \usepackage{lmodern}%get scalable font
 \usepackage{titling}
+\usepackage{amsmath}
+\usepackage{amsfonts}
 
 % Define command for show :=
 \newcommand{\defeq}{\vcentcolon=}
@@ -52,20 +54,20 @@
 
 This subsection defines terminology and definitions in order to fully understand the following essay.\\
 
-\noindent With the symbol $\mathbb{U}$ we denote the set of possible keys. The sets $\mathbb{Z}_p^*, \mathbb{Z}_p$ are defined as $\mathbb{Z}_p^* = \{0, \dots, p - 1\}, \mathbb{Z}_p = \{1, \dots, p - 1\}$ where $p$ is a \textit{prime} number.
+\noindent With the symbol $U$ we denote the set of possible keys. The sets $\mathbb{Z}_p^*$ and $\mathbb{Z}_p$ are defined as $\mathbb{Z}_p^* = \{0, \dots, p - 1\}, \mathbb{Z}_p = \{1, \dots, p - 1\}$ where $p$ is a \textit{prime} number.
 
 \begin{definition*}[Universal Hash Family]
-A hash family $\Hb$ is said to be \textbf{universal} if given two different keys $k_1$ and $k_2$ the probability of collision is less than $\frac{1}{m}$.
+A hash family $\Hb$ is said to be \textbf{universal} if given two different keys $k_1$ and $k_2$, and given a random hash function from the family, the probability of collision is less than $\frac{1}{m}$.
 
 $$
-\forall k_1, k_2 \in \mathbb{U}, k_1 \ne k_2 .Pr_{h \in \Hb}(\{h(k_1) = h(k_2)\}) \le \frac{1}{m}
+\forall k_1, k_2 \in {U}, k_1 \ne k_2 .\textrm{\textbf{Pr}}_{h \in \Hb}(\{h(k_1) = h(k_2)\}) \le \frac{1}{m}
 $$
 
 \end{definition*}
 
 \subsection{Problem definition}
 
-The first Algorithm Design hands-on requests to prove that given the following family of functions:
+The first hands-on requests to prove that given the following family of functions:
 $$
 \Hb \defeq \{ h_{ab}(x) = ((ax + b) \bmod p) \bmod m \mid a \in \mathbb{Z}_p^*, b \in \mathbb{Z}_p \}
 $$
@@ -76,7 +78,7 @@ $$
 
 \begin{proof}
 
-Two different keys $k_1, k_2$, collides if and only if the hash function image is equal. So given a function $h_{ab} \in \Hb$, and $k_1 \ne k_2 \in \mathbb{Z}_p$:
+Two different keys $k_1, k_2$, collides if and only if the hash function image is equal. So, given a function $h_{ab} \in \Hb$, and $k_1 \ne k_2 \in \mathbb{Z}_p$:
 
 \begin{align*}
 h_{ab}(k_1) = h_{ab}(k_2)
@@ -131,10 +133,11 @@ In order to be equal, the values $r$ and $s$ should be congruent to $0$ in $\bmo
 
 \noindent Thus, there is one-to-one correspondence between the pairs $(a, b)$, with $a \ne 0$, and the pair $(r, s)$, with $r \ne s$. We have $p(p - 1)$ possibilities to select the pair $(a, b)$ and $(r, s)$.\\
 
-\noindent Therefore, the probability that keys $k_1$ and $k_2$ collide is equal to the probability that $r \equiv s \pmod m$. For a fixed $r$, the number to choose $s$, with $s \ne r, s \equiv r \pmod m$, from the $(p - 1)$ possibilities, is at most $\frac{(p - 1)}{m}$. So, the number of bad hash functions $h \in \Hb$ is equal to $p\frac{(p - 1)}{m} = \frac{|H|}{m}$, in the end:
+\noindent Therefore, the probability that keys $k_1$ and $k_2$ collide is equal to the probability that $r \equiv s \pmod m$. For a fixed $r$, the number to choose $s$, with $s \ne r, s \equiv r \pmod m$, from the $(p - 1)$ possibilities, is at most $\frac{(p - 1)}{m}$. 
+So, the number of bad hash functions $h \in \Hb$ is equal to $p\frac{(p - 1)}{m} = \frac{|H|}{m}$. Finally, we have:
 
 $$
-Pr(\{h \in \Hb \mid h(k_1) = h(k_2) \}) = \frac{\text{\# bad choices of} \, h}{\text{\# all choices of} \, h \in \Hb} = \frac{|\Bb|}{|\Hb|} = \frac{\frac{|\Hb|}{m}}{|\Hb|} = \frac{1}{m}
+\textrm{\textbf{Pr}}(\{h \in \Hb \mid h(k_1) = h(k_2) \}) = \frac{\text{\# bad choices of} \, h}{\text{\# all choices of} \, h \in \Hb} = \frac{|\Bb|}{|\Hb|} = \frac{\frac{|\Hb|}{m}}{|\Hb|} = \frac{1}{m}
 $$ 
 
 \noindent $\Hb$ is an \textit{universal} hash family.
