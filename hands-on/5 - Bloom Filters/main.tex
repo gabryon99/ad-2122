@@ -48,10 +48,7 @@
 }
 
 
-\setmonofont[
-    Scale=0.85,
-    Contextuals=Alternate % Activate the calt feature
-]{FiraCode}
+\setmonofont[Scale=0.85,Contextuals=Alternate]{FiraCode}
 
 \lstset{
     style=FiraCodeStyle,
@@ -112,9 +109,9 @@ We start defining a new random indicator variable $X_i$ such that:
 
 \begin{align*}
     E \llbracket Y \rrbracket = E \bigg\llbracket  \sum_{i = 0}^{m - 1}X_i \bigg\rrbracket = \sum_{i = 0}^{m - 1} E \llbracket X_i \rrbracket \\
-    = \sum_{i = 0}^{m - 1} 1 - (1 - \frac{1}{m})^n = (m - 1)(1 - (1 - \frac{1}{m})^n) \\
-    = m(1 - (1 - \frac{1}{m})^n) \\
-    = m - m(1 - \frac{1}{m})^n \simeq m (1 - e^{-\frac{n}{m}})
+    = \sum_{i = 0}^{m - 1} 1 - \bigg(1 - \frac{1}{m}\bigg)^n = (m - 1)\bigg(1 - \bigg(1 - \frac{1}{m}\bigg)^n\bigg) \\
+    = m\bigg(1 - \bigg(1 - \frac{1}{m}\bigg)^n\bigg) \\
+    = m - m\bigg(1 - \frac{1}{m}\bigg)^n \simeq m \bigg(1 - e^{-\frac{n}{m}}\bigg)
 \end{align*}
 
 \noindent Knowing that $\mu = E \llbracket Y \rrbracket \simeq m (1 - e^{-\frac{n}{m}})$, we can solve the equation to find the cardinality of the original set $S$, which is equal to $n$.
@@ -150,8 +147,10 @@ $O(m \log m)$ space to store the entire array of prefix sums.\\
 
 \subsubsection{Requested Solution}
 
-\noindent To achieve the requested space $O(m)$ we sample the prefix sums array $P$ and we create a new lookup table $T$, described below. First, we have to determine how many samples
-of the prefix sums we do need. We are going to use $2 * \log m$ samples of prefix sums. Second, how do we build $T$? We define $L = \frac{\log m}{2}$, and we split the bit array $B$
+\noindent To achieve the requested space $O(m)$ we sample the prefix sums array $P$ and we create a new lookup table $T$, described below.\\
+
+\noindent First, we have to determine how many samples
+of the prefix sums we do need. We are going to use $\frac{2m}{\log m}$ samples of prefix sums. Second, how do we build $T$? We define $L = \frac{\log m}{2}$, and we split the bit array $B$
 in $L$ parts. Splitting the bit array leave us with $L$ portions, that we can use to index our lookup table $T$. 
 How many strings of bits can be represented using $L$ bits? That is, how many rows $T$ will have? Exactly: $\#\textrm{rows} = 2^L$.
 
@@ -160,21 +159,29 @@ How many strings of bits can be represented using $L$ bits? That is, how many ro
 \end{equation}
 
 \noindent We need $\sqrt m$ rows for $T$. How many columns will have the table $T$? $\# \textrm{columns} = L = \frac{\log m}{2}$. Therefore, our lookup table $T$ will have a size of $\sqrt m \frac{\log m}{2}$. Assuming we have a bit array of size 
-$m = 16$, then the lookup table will look like as shown below.
+$m = 64$, then the lookup table will look like as shown below.
 
 \begin{align}
      \begin{matrix}
-         (0 & 0)_2 \\
-         (0 & 1)_2 \\
-         (1 & 0)_2 \\
-         (1 & 1)_2 
-     \end{matrix} \;
+         (0 & 0 & 0)_2 \\
+         (0 & 0 & 1)_2 \\
+         (0 & 1 & 0)_2 \\
+         (0 & 1 & 1)_2 \\
+         (1 & 0 & 0)_2 \\
+         (1 & 0 & 1)_2 \\
+         (1 & 1 & 0)_2 \\
+         (1 & 1 & 1)_2
+     \end{matrix} \quad
      T = 
      \begin{bmatrix}
-        0 & 0 \\
-        0 & 1 \\
-        1 & 1 \\
-        1 & 2
+        0 & 0 & 0 \\
+        0 & 0 & 1 \\
+        0 & 1 & 1 \\
+        0 & 1 & 2 \\
+        1 & 1 & 1 \\
+        1 & 1 & 2 \\
+        1 & 2 & 2 \\
+        1 & 2 & 3
     \end{bmatrix} 
 \end{align}
 
@@ -186,34 +193,32 @@ both prefix sums samples and the lookup table $T$.
 
 \subsubsection{Space Complexity}
 
-We are keeping $O(\log m)$ samples of prefix sums, which takes up to $O(\log m)$ bits,
-therefore $O((\log{m})^2)$.
+We are keeping $\frac{2m}{\log m}$ samples of prefix sums, which takes up to $O(\log m)$ bits,
+therefore $O(m)$.
 Plus, for the lookup table $T$ we are using $\sqrt m$ rows and $\frac{\log m}{2}$ columns, and for each cell we
 need $O(\log \log m)$ bits, thus $O(\sqrt{m}\log m (\log \log m))$ bits.
 
-\begin{lstlisting}[language=C,caption=`Rank function implemented using a bit array of 16 elements.']
-    uint16_t rank(uint16_t B, uint16_t j) {
+\begin{lstlisting}[language=C,caption=`Rank function implemented using a bit array of 64 elements.']
+    uint64_t rank(uint64_t B, uint64_t j) {
         // Assuming we have the sample prefix sums array P
         // and the lookup table T.
 
-        // Size of the bit array B
-        int m = 16; 
-        // How many portions B is splitted up
-        int L = log2(m) / 2;
+        uint64_t m = 64; 
+        uint64_t L = log2(m) / 2;
         
         // Row and Column indecies for the Lookup Table T
-        int r = get_row(B, j);
-        int c = j % L;
+        uint64_t r = get_row(B, j);
+        uint64_t c = j % L;
 
-        return P[(int)(j / L) - 1] + T[r][c];
+        return P[(j / L) - 1] + T[r][c];
     }
 
-    uint16_t get_row(uint16_t B, uint16_t i) {
+    uint64_t get_row(uint64_t B, uint64_t i) {
         // Shift and mask to get the row index
-        return (B >> (0x0C - (i * 4))) & 0x0F;
+        return (B >> (0x3d - (i * 8))) & 0x7;
     }
 \end{lstlisting}
 
-\noindent At the end we have $O((\log m)^2) + O(\sqrt{m}\log m (\log \log m)) = o(m)$ total bits.
+\noindent At the end we have $O(m) + O(\sqrt{m}\log m (\log \log m)) = O(m)$ total bits.
 
 \end{document}
