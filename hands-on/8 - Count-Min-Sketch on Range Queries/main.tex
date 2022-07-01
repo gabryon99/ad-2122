@@ -83,7 +83,7 @@
 Consider the counters $F[i]$ for $1 \le i \le n$, where $n$ is the number of items in the stream of any length. 
 At any time, we know that $|| F ||$ is the total number of items (with repetitions) seen so far, where each 
 $F[i]$ contains how many times the item $i$ has been so far.  
-We saw that CM-sketches provide a FPTAS $F'[i]$ such that $F[i] \le F'[i] \le F[i] + \epsilon  ||F||$, 
+We saw that CM-sketches provide a FPTAS $F'[i]$ such that $F[i] \le F'[i] \le F[i] + \varepsilon  ||F||$, 
 where the latter inequality holds with probability at least $1 - \delta$.\newline
 
 \noindent Consider now a range query $(a,b)$, where we want $F_{ab} = \sum_{a \le i \le b} F[i]$. Show how to adapt CM-sketch so that a FPTAS $F'_{ab}$ is provided: 
@@ -105,7 +105,7 @@ where the latter inequality holds with probability at least $1 - \delta$.\newlin
 
 \subsection{Baseline Solution}
 
-The baseline solution is easy to implement: we can use a \verb+for+ loop starting from the element $a$ up to $b$ and sum
+The baseline solution is pretty straightforward to implement: we can use a \verb+for+ loop starting from the element $a$ up to $b$ and sum
 all the counters. Since each counter has some error, if we sum up all the counter in a large range,
 then also the final error will grow linearly as large as the range, that is $b - a + 1$.
 
@@ -119,7 +119,7 @@ def range(F: CountMinSketch, a: int, b: int): int:
 
 \subsection{Requested Solution}
 
-\noindent We can improve the baseline solution, using the powers of two. In fact, any range $(a, b)$ can be
+\noindent We can improve the baseline solution using the ranges of powers of two. In fact, any range $(a, b)$ can be
 expressed as disjoint union of length with the powers of two, e.g., if we have the range $(4, 10)$:
 $$
 (4, 10) = (4) \cup (5, 8) \cup (9, 10)
@@ -137,7 +137,7 @@ need at most $2n$ of them. Having these ranges, we can bind the error of the ran
 logarithmic error.
 
 \begin{equation*}
-    F_{ab} \le \tilde{F}_{ab} \le F_{ab} + 2 \epsilon \log{n} ||F||
+    F_{ab} \le \tilde{F}_{ab} \le F_{ab} + 2 \varepsilon \log{n} ||F||
 \end{equation*}
 
 \noindent This can be achieved using $\log n$ Count-Min Sketches. We build a ``logic'' binary tree where each range is split in two parts.
@@ -257,23 +257,34 @@ def query(r: (int, int)) -> int:
     return 0
 \end{lstlisting}
 
-\subsection{Bounding the error}
+\noindent These algorithms work also with one Count-min Sketch, the universe of the counters will be the dyadic ranges.
+
+\subsection{Bounding the failure probability}
 
 The error analysis will require some definitions to work with. First, we are going to define the set of dyadic ranges as:
 \begin{equation*}
     D = \{(1, n), (1, {n}/{2}), ({n}/{2} + 1, n), \dots, (1, 1), (2, 2), \dots, (n, n)\}, |D| = 2n
 \end{equation*}
 
-\noindent The analysis makes use of just one Count-Min Sketch, and it is restricted to the ranges contained in the set $D$. Therefore,
-we express the counter $F_{ab}$ as $F_{(a, b)}$ where the range $(a, b) \in D$. The approximate counter $\tilde{F}_{(a, b)}$ is obtained
+\noindent The analysis makes use of just one Count-Min Sketch, and it is restricted to the ranges contained in the set $D$. Furthermore, we
+introduce the function:
+\begin{equation*}
+    \textrm{dy}: \mathcal{P}(\mathbb{N} \times \mathbb{N}) \to \mathcal{P}(D) 
+\end{equation*}
+which computes the dyadic ranges of a given range, as described in the previous section. For any range $r$ given to the function $\textrm{dy}$, thanks to the \textbf{Fact} 1, we have that:
+\begin{equation*}
+    \forall r \in \mathcal{P}(\mathbb{N} \times \mathbb{N}). |\textrm{dy}(r)| \le 2 \log n
+\end{equation*}
+
+\noindent We express the counter $F_{ab}$ as $F_{(a, b)}$ where the range $(a, b) \in D$. The approximate counter $\tilde{F}_{(a, b)}$ is obtained
 as follows in Equation 1.
 
 \begin{equation}
     \tilde{F}_{(a, b)} = F_{(a, b)} + \sum_{(\alpha, \beta) \in D,(\alpha, \beta) \ne (a, b)} X_{(\alpha, \beta)}
 \end{equation}
 
-\noindent The random variable $X_{(a, b)}$ is a value representing the ``garbage'' (according to the definition given in class). We would like to know the expected value of this random variable.
-To do so, we define a new indicator random variable, as seen during the lectures:
+\noindent The random variable $X_{(a, b)}$ is a value representing the ``garbage'' (according to the definition given during the lectures). We would like to know the expected value of this random variable.
+To do so, we define a new indicator random variable, as seen in class:
 \begin{equation*}
     I_{j,i,k} = \begin{cases}
         1 & h_j(i) = h_j(k) \\
@@ -285,45 +296,28 @@ To do so, we define a new indicator random variable, as seen during the lectures
 Fixed a $j \in [d]$ and given an $i \in D$ we can define $X_{i}^{(j)}$ as: 
 
 \begin{equation*}
-    X_{i}^{(j)} = \sum_{k \in D, k \ne i}I_{j, i, k} \cdot  F_k
+    X_{i}^{(j)} = \sum_{k \in \textrm{dy}(k)}I_{j, i, k} \cdot  F_k
 \end{equation*}
 
 \noindent We can compute its expectation as follows:
 
 \begin{equation*}
     \begin{split}
-        E\big[X_{i}^{(j)}\big] & = E\bigg[\sum_{k \in D, k \ne i}I_{j, i, k} F_k\bigg] \\
-        & = \sum_{k \in D, k \ne i} E[I_{j, i, k} \cdot F_k] = 
-            \sum_{k \in D, k \ne i} \textrm{Pr}(\{I_{j, i, k} = 1\}) F_k \\
-        & = \sum_{k \in D, k \ne i} \frac{\epsilon}{e} \cdot  F_k = 
-             2n \frac{\epsilon}{e} \sum_{k \in D, k \ne i} 
-        \le 2n \frac{\epsilon}{e} ||F||
+        E\bigg[X_{i}^{(j)}\bigg] & = E\bigg[\sum_{k \in \textrm{dy}(k)}I_{j, i, k} F_k\bigg] \\
+        & = \sum_{k \in \textrm{dy}(k)} E[I_{j, i, k} \cdot F_k] \\
+        & = \sum_{k \in \textrm{dy}(k)} \textrm{Pr}(\{I_{j, i, k} = 1\}) F_k \\
+        & = \sum_{k \in \textrm{dy}(k)} \frac{\varepsilon}{e} \cdot  F_k \\ 
+        & = 2 \log n \frac{\varepsilon}{e} \sum_{k \in \textrm{dy}(k)} F_k \\
+        & \le 2 \log n \frac{\varepsilon}{e} ||F||
     \end{split}
 \end{equation*}
 
-\noindent Knowing that $E\big[X_{i}^{(j)}\big] \le 2n \frac{\epsilon}{e} ||F||$, we can bind the error probability using the Markov's inequality:
+\noindent Knowing that $E\big[X_{i}^{(j)}\big] \le 2 \log n \frac{\varepsilon}{e} ||F||$, we can bind the error probability using the Markov's inequality:
 
 \begin{gather*}
-    \textrm{Pr}(\tilde{F}_{(a, b)} \ge F_{(a, b)} + 2\epsilon n ||F||) \le \delta \iff \\
-    \textrm{Pr}\bigg(F_{(a, b)} + \sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge F_{(a, b)} + 2 \epsilon n ||F|| \bigg) \le \delta \iff \\
-    \textrm{Pr}\bigg(\sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge 2 \epsilon n ||F||\bigg) \le \frac{E\bigg[\sum X_(\alpha, \beta)\bigg]}{2 \epsilon n ||F||} = \frac{2n \frac{\epsilon}{e} ||F||}{2 \epsilon n ||F||} = \frac{1}{e}
-\end{gather*}
-
-\subsection{A slightly precise analysis}
-
-A precise analysis should involve the fact that the queried ranges are not only the dyadic ones. If we use more than one Count-Min Sketch as explained 
-in SubSection 2.2 we could obtain a more precise analysis on the error bound. With calculations similar to the ones above we would obtain that:
-
-\begin{equation*}
-    E\big[X_{i}^{(j)}\big] \le 2 \log n \frac{\epsilon}{e} ||F||
-\end{equation*}
-
-\noindent Therefore, the error probability will remain the same:
-
-\begin{gather*}
-    \textrm{Pr}(\tilde{F}_{(a, b)} \ge F_{(a, b)} + 2\epsilon \log n ||F||) \le \delta \iff \\
-    \textrm{Pr}\bigg(F_{(a, b)} + \sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge F_{(a, b)} + 2 \epsilon \log n ||F|| \bigg) \le \delta \iff \\
-    \textrm{Pr}\bigg(\sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge 2 \epsilon n ||F||\bigg) \le \frac{E\bigg[\sum X_(\alpha, \beta)\bigg]}{2 \epsilon \log n ||F||} = \frac{2 \log n \frac{\epsilon}{e} ||F||}{2 \epsilon \log n ||F||} = \frac{1}{e}
+    \textrm{Pr}(\tilde{F}_{(a, b)} \ge F_{(a, b)} + 2\varepsilon \log n ||F||) \le \delta \iff \\
+    \textrm{Pr}\bigg(F_{(a, b)} + \sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge F_{(a, b)} + 2 \varepsilon \log n ||F|| \bigg) \le \delta \iff \\
+    \textrm{Pr}\bigg(\sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge 2 \varepsilon \log n ||F||\bigg) \le \frac{E\bigg[\sum X_{(\alpha, \beta)}\bigg]}{2 \varepsilon \log n ||F||} = \frac{2 \log n \frac{\varepsilon}{e} ||F||}{2 \varepsilon \log n ||F||} = \frac{1}{e}
 \end{gather*}
 
 \end{document}
