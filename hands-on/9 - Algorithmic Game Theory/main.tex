@@ -97,7 +97,54 @@ and uniformly redistributed among all the $N$ members of the group. Describe the
 
 \subsection{Diabolik}
 
-Work in progress.
+The main game's \textit{players} are the \textit{thief} (Diabolik), the \textit{judge} and a third one, the \textit{public opinion}. The thief has two strategies available,
+ha can sue or not sue the judge, having so $S_{\textrm{Diabolik}} = \{\textrm{Sue}, \textrm{Not Sue}\}$. In the other hand, the judge can \textit{absolve} or \textit{condemn} the defendant, therefore, his
+stategy set is the following one  $S_{\textrm{Judge}} = \{\textrm{Absolve}, \textrm{Condemn}\}$.\\
+
+\noindent The game can be modelled according to two cases:
+\begin{enumerate}
+    \item Diabolik is guilty.
+    \item Diabolik is \textbf{not} guilty.
+\end{enumerate}
+
+\subsection{1st Case: Diabolik is guilty}
+
+In the case where Diabolik is guilty we have the following payoff matrix (the Table \ref{tbl:diabolik1}).
+\begin{table}[h!]
+    \centering
+    \setlength{\extrarowheight}{2pt}
+    \label{tbl:diabolik1}
+    \begin{tabular}{*{4}{c|}}
+      \multicolumn{2}{c}{} & \multicolumn{2}{c}{Guilty Diabolik}\\\cline{3-4}
+      \multicolumn{1}{c}{} &  & Sue  & Not Sue \\\cline{2-4}
+      \multirow{2}*{Judge}  & Condemn & $(-1, -1)$ & $(0, -1)$ \\\cline{2-4}
+      & Absolve & $(-2, -1)$ & $(0,0)$ \\\cline{2-4}
+    \end{tabular}
+    \caption{Payoff table when Diabolik is guilty.}
+\end{table}
+
+\noindent In the Table \ref{tbl:diabolik1} we have to consider the \textit{public opinion} as well. If the judge acts correctly,
+condemning Diabolik when he is really guilty, then the public opinion will be happy about it. If the judge is corrupted and Diabolik is guilty, then the 
+opinion will be upset with the judge's decision.
+
+\subsection{2nd Case: Diabolik is not guilty}
+
+In the case where Diabolik is not guilty we have the following payoff matrix:
+\begin{table}[h!]
+    \centering
+    \setlength{\extrarowheight}{2pt}
+    \label{tbl:diabolik2}
+    \begin{tabular}{*{4}{c|}}
+      \multicolumn{2}{c}{} & \multicolumn{2}{c}{Guilty Diabolik}\\\cline{3-4}
+      \multicolumn{1}{c}{} &  & Sue  & Not Sue \\\cline{2-4}
+      \multirow{2}*{Judge}  & Condemn & $(-2, -1)$ & $(0, -2)$ \\\cline{2-4}
+      & Absolve & $(-1, -1)$ & $(0,0)$ \\\cline{2-4}
+    \end{tabular}
+    \caption{Payoff table when Diabolik is not guilty.}
+\end{table}
+
+\noindent In this case we can make the opposite considerations about the public opinion. If the judge condemns Diabolik, then the public opinion
+will not agree with judge's decision. Otherwise, if the judge makes the right choice the public opinion is happy.
 
 \subsection{Investment Agency}
 
@@ -120,7 +167,7 @@ This game can be modelled as follows:
 \begin{equation*}
     g_i = u(s_i) - c(s_i)
 \end{equation*}
-We can have two specific situations. In the foremost, if the incomes $g_i \ge 0$ then the player benefits from the investments, otherwise, if the incoming
+We can have two specific situations. In the foremost, if the incomes $g_i \ge 0$ then the player benefits from the investments, otherwise, if the incomes
 are $g_i \le 0$ the contributor loses money. The important question to ask ourselves is the following one: when should I contribute for the project?
 To answer that, let us build an incoming matrix, containing all the possible situations for the game. We restrict ourselves in the case of $N=2$ players (this could be easily generalized).
 With $C$ we indicate a \textit{contributing} player, instead, with $NC$ a non-contributing one.
@@ -134,7 +181,7 @@ With $C$ we indicate a \textit{contributing} player, instead, with $NC$ a non-co
       \multirow{2}*{Contributor $1$}  & $C$ & $(50,50)$ & $(-25, 75)$ \\\cline{2-4}
       & $NC$ & $(75, -25)$ & $(0,0)$ \\\cline{2-4}
     \end{tabular}
-    \label{Incoming table for $N=2$ players.}
+    \caption{Incomes table for $N=2$ players.}
 \end{table}
 
 \noindent Let us analyze the table:
