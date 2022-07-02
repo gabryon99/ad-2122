@@ -296,18 +296,18 @@ To do so, we define a new indicator random variable, as seen in class:
 Fixed a $j \in [d]$ and given an $i \in D$ we can define $X_{i}^{(j)}$ as: 
 
 \begin{equation*}
-    X_{i}^{(j)} = \sum_{k \in \textrm{dy}(k)}I_{j, i, k} \cdot  F_k
+    X_{i}^{(j)} = \sum_{k \in \textrm{dy}(i)}I_{j, i, k} \cdot  F_k
 \end{equation*}
 
 \noindent We can compute its expectation as follows:
 
 \begin{equation*}
     \begin{split}
-        E\bigg[X_{i}^{(j)}\bigg] & = E\bigg[\sum_{k \in \textrm{dy}(k)}I_{j, i, k} F_k\bigg] \\
-        & = \sum_{k \in \textrm{dy}(k)} E[I_{j, i, k} \cdot F_k] \\
-        & = \sum_{k \in \textrm{dy}(k)} \textrm{Pr}(\{I_{j, i, k} = 1\}) F_k \\
-        & = \sum_{k \in \textrm{dy}(k)} \frac{\varepsilon}{e} \cdot  F_k \\ 
-        & = 2 \log n \frac{\varepsilon}{e} \sum_{k \in \textrm{dy}(k)} F_k \\
+        E\bigg[X_{i}^{(j)}\bigg] & = E\bigg[\sum_{k \in \textrm{dy}(i)}I_{j, i, k} F_k\bigg] \\
+        & = \sum_{k \in \textrm{dy}(i)} E[I_{j, i, k} \cdot F_k] \\
+        & = \sum_{k \in \textrm{dy}(i)} \textrm{Pr}(\{I_{j, i, k} = 1\}) F_k \\
+        & = \sum_{k \in \textrm{dy}(i)} \frac{\varepsilon}{e} \cdot  F_k \\ 
+        & = 2 \log n \frac{\varepsilon}{e} \sum_{k \in \textrm{dy}(i)} F_k \\
         & \le 2 \log n \frac{\varepsilon}{e} ||F||
     \end{split}
 \end{equation*}
