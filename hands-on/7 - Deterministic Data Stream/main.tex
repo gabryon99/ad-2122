@@ -77,7 +77,7 @@
 \section{Introduction}
 
 Consider a stream of $n$ items, where items can appear more than once. The problem is to find the most frequently appearing item in the stream (where ties are broken arbitrarily if more than one item satisfies the latter). 
-For any fixed integer $k \le 1$, suppose that only $k$ items and their counters can be stored, one item per memory word; namely, 
+For any fixed integer $k \ge 1$, suppose that only $k$ items and their counters can be stored, one item per memory word; namely, 
 only $O(k)$ memory words of space are allowed. 
 \newline
 
@@ -89,27 +89,35 @@ namely, the next item to be read. Since any algorithm must be correct for any in
 
 \noindent \textit{Hints}:
 \begin{enumerate}
-    \item This is "classical" adversarial argument based on the fact that any deterministic algorithm A using $O(k)$ memory words gives the wrong answer for a suitable stream chosen by the adversary. 
-    \item The stream to choose as an adversary is taken from a candidate set sufficiently large: given $O(k)$ memory works, let $f(k)$ denote the maximum number of possible situations that algorithm A can discriminate. Create a set of $C$ candidate streams, where $C > f(k)$: in this way there are two streams $S1$ and $S2$ that A cannot distinguish, by the pigeon principle. 
+    \item This is ``classical'' adversarial argument based on the fact that any deterministic algorithm A using $O(k)$ memory words gives the wrong answer for a suitable stream chosen by the adversary. 
+    \item The stream to choose as an adversary is taken from a candidate set sufficiently large: given $O(k)$ memory works, let $f(k)$ denote the maximum number of possible situations that algorithm A can discriminate. Create a set of $C$ candidate streams, where $|C| > f(k)$: in this way there are two streams $S1$ and $S2$ that A cannot distinguish, by the pigeon principle. 
 \end{enumerate}
 
 \section{Solution}
 
-Our main goal is to find two streams $S_1$ and $S_2$ such that $\textrm{mostFreq}(S_1) \ne \textrm{mostFreq}(S_2)$, 
-but for the algorithm $A$ we have $A(S_1) = A(S_2)$. To do that, we take a universe of elements $U$ and its subsets $\Sigma_i \subseteq U$ such
+To begin with, let us define a new function called $\textrm{moreFreq}$ such that, given an alphabet of characters $\Sigma$ we have:
+\begin{gather*}
+    \textrm{moreFreq}: \Sigma^{*} \to \Sigma \\
+    \textrm{moreFreq}(S) = \textrm{most frequent item} \; c \; \textrm{in the stream} \; S
+\end{gather*}
+
+\noindent Where $\Sigma^{*}$ it the \textit{Kleene} closure of the alphabet used in automata theory.\\
+
+\noindent As suggested by the hints, our main goal is to find two streams $S_1$ and $S_2$ such that $\textrm{mostFreq}(S_1) \ne \textrm{mostFreq}(S_2)$, 
+but for the algorithm $A$ we have $A(S_1) = A(S_2)$. To do so, we take an universe of elements, denoted with $U$, and its subsets $\Sigma_i \subseteq U$ such
 that they have cardinality $|\Sigma_i| = \frac{|U|}{2}$ and $\forall i, j, i \ne j$ they satisfy the following properties:
 \begin{enumerate}
     \item $|\Sigma_i \cap \Sigma_j| \ge 1$: have at least one element in common;
-    \item $|\Sigma_i \setminus \Sigma_j| \ge 1$: at least one character differ int both sets.
+    \item $|\Sigma_i \setminus \Sigma_j| \ge 1$: at least one character differ in both sets.
 \end{enumerate}
 
 \noindent How many subsets satisfy the requesting criteria? We use the binomial coefficient to discover that are:
 \begin{equation}
     \binom{|U|}{\frac{|U|}{2} + 1} \simeq 2^{|U|} > f(k)
 \end{equation}
-sets possible. Note that if the cardinality of $U$ is big then the number of sets will be exponentially large!\\
+Note that if the cardinality of $U$ is huge then the number of sets will be exponentially large!\\
 
-\noindent Therefore, $\exists S_i \in \Sigma_{i}^*, S_j \ in \Sigma_{j}^{*}, S_i \ne S_j$ streams that are indistinguishable for the algorithm $A$
+\noindent Therefore, $\exists S_i \in \Sigma_{i}^*, S_j \in \Sigma_{j}^{*}, S_i \ne S_j$ streams that are indistinguishable for the algorithm $A$, due to the pigeonhole principle.
 These two streams are build as shown below:
 
 \begin{align}
@@ -117,14 +125,14 @@ S_i = s_1^{(i)}s_2^{(i)}s_3^{(i)} \dots s_{\frac{|U|}{2}}^{(i)} \\
 S_j = s_1^{(j)}s_2^{(j)}s_3^{(j)} \dots s_{\frac{|U|}{2}}^{(j)}
 \end{align}
 
-\noindent Now, if we pick an element $x \in |\Sigma_i \setminus \Sigma_j|$ and $y \in |\Sigma_j \setminus \Sigma_i|$, and we concatenate them to 
+\noindent Now, if we pick an element $x \in \Sigma_i \setminus \Sigma_j$ and $y \in \Sigma_j \setminus \Sigma_i$, such that $x \ne y$ \footnote{Since we are requesting the properties (1) and (2) we can take such $x$ and $y$.}, and we concatenate them to 
 the streams $S_i, S_j$ obtaining $S_ixy$ and $S_jxy$. Giving these two streams to $A$ we have $A(S_i xy) = A(S_j xy)$ because $S_i$ and $S_j$ are
 indistinguishable for $A$. But:
 
 \begin{align*}
-    \textrm{mostFreq}(S_i xy) \ne \textrm{mostFreq}(S_j xy) \\
-    x \ne y
+    \textrm{mostFreq}(S_i xy) \ne \textrm{mostFreq}(S_j xy)
 \end{align*}
-and, therefore, $A$ fails.
+
+\noindent Thus, the algorithm $A$ fails.
 
 \end{document}
