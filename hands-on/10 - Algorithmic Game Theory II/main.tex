@@ -17,6 +17,7 @@
 \usepackage{fontspec}
 \usepackage{lstfiracode}
 \usepackage{stmaryrd}
+\usepackage[]{array,multirow}
 
 % Define command for show :=
 \newcommand{\defeq}{\vcentcolon=}
@@ -48,10 +49,7 @@
     \end{center}
 }
 
-\setmonofont{FiraCode}[
-    Scale=0.85,
-    Contextuals=Alternate % Activate the calt feature
-]
+\setmonofont{FiraCode}[Scale=0.85,Contextuals=Alternate]
 
 \lstset{
     style=FiraCodeStyle,
@@ -94,7 +92,7 @@ The game can be modeled by a payoff matrix where crossing successfully has a pay
 
 Find the mixed strategy and expected payoff for the Back Stravinsky game.
 
-\subsection[]{Problem 3: Children to Kindergartends}
+\subsection[]{Problem 3: Children to Kindergartens}
 
 The Municipality of your city wants to implement an algorithm for the assignment of children to kindergartens that, on the one hand, takes into account 
 the desiderata of families and, on the other hand, reduces `city traffic caused by taking children to school. 
@@ -106,7 +104,7 @@ As a form of welfare the Municipality has established the following two rules:
     \item families with only one parent have priority for schools close to the workplace.
 \end{enumerate}
 
-Model the situation as a stable matching problem and describe the payoff functions of the players. Question: what happens to twin siblings?  
+\noindent Model the situation as a stable matching problem and describe the payoff functions of the players. Question: what happens to twin siblings?  
 
 \section{Solution}
 
@@ -115,24 +113,25 @@ Model the situation as a stable matching problem and describe the payoff functio
 The action set is build with two events $A= \{\textit{Cross}, \textit{Stop}\}$. With $D_i, i \in [1, 2]$ we define the i-th driver that is crossing the street.
 The payoff table is shown in Table \ref{tbl:payoff1}.
 
-\begin{table}[!h]
+\noindent As we can see from the table, we have two Nash equilibrium, which are the profiles: $(\textit{Cross}, \textit{Stop})$ and $(\textit{Stop}, \textit{Cross})$.\\
+
+\begin{table}[h!]
+    \setlength{\extrarowheight}{2pt}
     \label{tbl:payoff1}
     \begin{center}
-        \begin{tabular}{l|l|l|}
-            \cline{2-3}
-            $D_1$ / $D_2$                  & Cross      & Stop \\ \hline
-            \multicolumn{1}{|l|}{Cross} & -100, -100 & 1, 0 \\ \hline
-            \multicolumn{1}{|l|}{Stop}  & 0,1        & 0, 0 \\ \hline
-            \end{tabular}
+        \begin{tabular}{cc|c|c|}
+            & \multicolumn{1}{c}{} & \multicolumn{2}{c}{Driver $2$}\\
+            & \multicolumn{1}{c}{} & \multicolumn{1}{c}{Cross}  & \multicolumn{1}{c}{Stop} \\\cline{3-4}
+            \multirow{2}*{Driver $1$}  & Cross & $(-100,-100)$ & $(1,0)$ \\\cline{3-4}
+            & Stop & $(0,1)$ & $(0,0)$ \\\cline{3-4}
+        \end{tabular}
     \end{center}
     \caption{Payoff Table of Crossing Streets}
 \end{table}
 
-\noindent As we can see from the table, we have two Nash equilibria, which are the profiles: $(\textit{Cross}, \textit{Stop})$ and $(\textit{Stop}, \textit{Cross})$.\\
-
 \noindent To find the mixed strategies for this problem, we solve the following equations:
 
-\begin{align}
+\begin{align*}
     \begin{cases}
         \mu_{D_1}(\textit{Cross})  = \mu_{D_1}(\textit{Stop}) \\
         \mu_{D_2}(\textit{Cross})  = \mu_{D_2}(\textit{Stop})
@@ -147,12 +146,13 @@ The payoff table is shown in Table \ref{tbl:payoff1}.
         q = \frac{1}{101} \\
         p = \frac{1}{101}
     \end{cases}
-\end{align}
+\end{align*}
 
 \noindent Since the game is symmetric, the expected payoff is equal for both players:
 
 \begin{align*}
-    E \llbracket \mu_{D_1} \rrbracket = E \llbracket \mu_{D_2} \rrbracket = pq(-100) + p(1- q)1 + (1- p)q0 + (1 - p)(1 - q)0 \\
+    E \llbracket \mu_{D_1} \rrbracket = E \llbracket \mu_{D_2} \rrbracket  \\
+    = pq(-100) + p(1- q)1 + (1- p)q0 + (1 - p)(1 - q)0 \\
     = -100pq + p - qp = -101pq + p = p (1 - 101q) = p(1 - 101p) = 0
 \end{align*}
 
@@ -160,8 +160,22 @@ The payoff table is shown in Table \ref{tbl:payoff1}.
 
 TODO.
 
-\subsection{Solution for `Children to Kindergartends'}
+\subsection{Solution for `Children to Kindergartens'}
 
-TODO.
+Given two sets of equal size, the \textit{stable matching problem} consists of matching each element of one set to one in the other. In this 
+problem each element has some preferences.\\
+
+\noindent The following solution gives the idea behind the real one. We can describe the stable matching problem creating two sets: the first one is the set containing the children will go at schools, and, since the number
+of schools of a city does not match the number of children, the second set is the number of ``seats'' available in each school.
+For example, given $n$ schools indicated with $S_i$ (the $i$-th school), each with its own capacity $c_i$,
+we define the slots in the following way:
+
+\begin{equation*}
+    s_{i_{k}} = k\textrm{-th slot available in the school} \; i \quad \textrm{for} \; 0 \le k \le c_i
+\end{equation*}
+
+\noindent According to the game's description, we can model the preferences for each child. First, families with only parent have the higher priority overall. Second, if a child (with a sibiling) is already displaced in 
+a school, then his/her sibling will be placed in the same school. The twins will happen to be in the same school, since they can be seen as a ``unique'' child.
+
 
 \end{document}
