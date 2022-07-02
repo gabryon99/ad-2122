@@ -109,7 +109,7 @@ This game can be modelled as follows:
 \end{itemize}
 
 \begin{gather*}
-    u(s_i) = \frac{(k \cdot 100) \cdot 0.5}{N} \quad \textrm{where} \; k = \#\textrm{contributing players, including} \; i \\
+    u(s_i) = \frac{(k \cdot 100) \cdot 1.5}{N} \quad \textrm{where} \; k = \#\textrm{contributing players, including} \; i \\
     c(s_i) = \begin{cases}
         100 & \textrm{if} \; \textrm{player} \; P_i \; \textrm{Contibutes} \\
         0 & \textrm{otherwise}
@@ -131,16 +131,16 @@ With $C$ we indicate a \textit{contributing} player, instead, with $NC$ a non-co
     \begin{tabular}{*{4}{c|}}
       \multicolumn{2}{c}{} & \multicolumn{2}{c}{Contributor $2$}\\\cline{3-4}
       \multicolumn{1}{c}{} &  & $C$  & $NC$ \\\cline{2-4}
-      \multirow{2}*{Contributor $1$}  & $C$ & $(-50,-50)$ & $(-75,25)$ \\\cline{2-4}
-      & $NC$ & $(25,-75)$ & $(0,0)$ \\\cline{2-4}
+      \multirow{2}*{Contributor $1$}  & $C$ & $(50,50)$ & $(-25, 75)$ \\\cline{2-4}
+      & $NC$ & $(75, -25)$ & $(0,0)$ \\\cline{2-4}
     \end{tabular}
     \label{Incoming table for $N=2$ players.}
 \end{table}
 
 \noindent Let us analyze the table:
 \begin{enumerate}
-    \item if the two players decide to contribute, then they will gain $50$ euros, but they will have a gain of $-50$ euros which do not cover the initial costs.
-    \item if one of the two decides to contribute, then the non-contributing player will benefit of $25$ euros for the next year, instead the contributing one has lost $75$ euros.
+    \item if the two players decide to contribute, then they will gain $50$ euros, but they will have a gain of $150$ euros.
+    \item if one of the two decides to contribute, then the non-contributing player will benefit of $75$ euros for the next year, instead the contributing one has lost $25$ euros.
     \item if none of them contribute, then they will not gain or lose nothing.
 \end{enumerate}
 
