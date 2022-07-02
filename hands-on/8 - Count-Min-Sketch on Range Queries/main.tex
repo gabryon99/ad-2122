@@ -276,14 +276,14 @@ which computes the dyadic ranges of a given range, as described in the previous 
     \forall r \in \mathcal{P}(\mathbb{N} \times \mathbb{N}). |\textrm{dy}(r)| \le 2 \log n
 \end{equation*}
 
-\noindent We express the counter $F_{ab}$ as $F_{(a, b)}$ where the range $(a, b) \in D$. The approximate counter $\tilde{F}_{(a, b)}$ is obtained
+\noindent We express the counter $F_{i}$ where the range $i = (a, b) \in D$. The approximate counter $\tilde{F}_{i}$ is obtained
 as follows in Equation 1.
 
 \begin{equation}
-    \tilde{F}_{(a, b)} = F_{(a, b)} + \sum_{(\alpha, \beta) \in D,(\alpha, \beta) \ne (a, b)} X_{(\alpha, \beta)}
+    \tilde{F}_{i} = F_{i} + X_i
 \end{equation}
 
-\noindent The random variable $X_{(a, b)}$ is a value representing the ``garbage'' (according to the definition given during the lectures). We would like to know the expected value of this random variable.
+\noindent The random variable $X_{i}$ is a value representing the ``garbage'' (according to the definition given during the lectures). We would like to know the expected value of this random variable.
 To do so, we define a new indicator random variable, as seen in class:
 \begin{equation*}
     I_{j,i,k} = \begin{cases}
@@ -307,23 +307,23 @@ Fixed a $j \in [d]$ and given an $i \in D$ we can define $X_{i}^{(j)}$ as:
         & = \sum_{k \in \textrm{dy}(i)} E[I_{j, i, k} \cdot F_k] \\
         & = \sum_{k \in \textrm{dy}(i)} \textrm{Pr}(\{I_{j, i, k} = 1\}) F_k \\
         & = \sum_{k \in \textrm{dy}(i)} \frac{\varepsilon}{e} \cdot  F_k \\ 
-        & = 2 \log n \frac{\varepsilon}{e} \sum_{k \in \textrm{dy}(i)} F_k \\
-        & \le 2 \log n \frac{\varepsilon}{e} ||F||
+        & = \frac{\varepsilon}{e} \sum_{k \in \textrm{dy}(i)} F_k \\
+        & \le \frac{\varepsilon}{e} 2 \log n ||F||
     \end{split}
 \end{equation*}
 
 \noindent Knowing that $E\big[X_{i}^{(j)}\big] \le 2 \log n \frac{\varepsilon}{e} ||F||$, we can bind the error probability in a single row using the Markov's inequality:
 
 \begin{gather*}
-    \textrm{Pr}(\{\tilde{F}_{(a, b)} \ge F_{(a, b)} + 2\varepsilon \log n ||F||\}) \le \delta \iff \\
-    \textrm{Pr}\bigg(\bigg\{F_{(a, b)} + \sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge F_{(a, b)} + 2 \varepsilon \log n ||F|| \bigg\}\bigg) \le \delta \iff \\
-    \textrm{Pr}\bigg(\bigg\{\sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge 2 \varepsilon \log n ||F||\bigg\}\bigg) \le \frac{E\bigg[\sum X_{(\alpha, \beta)}\bigg]}{2 \varepsilon \log n ||F||} = \frac{2 \log n \frac{\varepsilon}{e} ||F||}{2 \varepsilon \log n ||F||} = \frac{1}{e}
+    \textrm{Pr}(\{\tilde{F}_{i} \ge F_{i} + \varepsilon 2 \log n ||F||\}) \le \delta \iff \\
+    \textrm{Pr}\bigg(\bigg\{F_{i} + X_{i} \ge F_{i} + \varepsilon 2 \log n ||F|| \bigg\}\bigg) \le \delta \iff \\
+    \textrm{Pr}\bigg(\bigg\{X_i \ge 2 \varepsilon \log n ||F||\bigg\}\bigg) \le \frac{E\big[ X_i \big]}{\varepsilon 2 \log n ||F||} = \frac{2\log n \frac{\varepsilon}{e} ||F||}{\varepsilon 2 \log n ||F||} = \frac{1}{e}
 \end{gather*}
 
 \noindent Since we have $r$ row, where each hash function is independent, we will have:
 
 \begin{equation*}
-    \prod_{r} \textrm{Pr}\bigg(\bigg\{\sum_{(\alpha, \beta) \ne (a, b)}X_{(\alpha, \beta)} \ge 2 \varepsilon \log n ||F||\bigg\}\bigg) \le \bigg(\frac{1}{e}\bigg)^r = \delta
+    \prod_{r} \textrm{Pr}\bigg(X_{i} \ge 2 \varepsilon \log n ||F||\bigg\}\bigg) \le \bigg(\frac{1}{e}\bigg)^r = \delta
 \end{equation*}
 
 \end{document}
