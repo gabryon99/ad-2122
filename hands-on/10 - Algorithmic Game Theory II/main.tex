@@ -158,7 +158,58 @@ The payoff table is shown in Table \ref{tbl:payoff1}.
 
 \subsection{Solution for `Mixed Strategy for Back Stravinsky Game'}
 
-TODO.
+The payoff table for Bach-Stravinsky game is the following one:
+
+\begin{table}[h!]
+    \centering
+    \setlength{\extrarowheight}{2pt}
+    \begin{tabular}{*{4}{c|}}
+      \multicolumn{2}{c}{} & \multicolumn{2}{c}{Wife}\\\cline{3-4}
+      \multicolumn{1}{c}{} &  & Bach  & Stravinsky \\\cline{2-4}
+      \multirow{2}*{Husband}  & Bach & $(2,1)$ & $(0, 0)$ \\\cline{2-4}
+      & Stravinsky & $(0, 0)$ & $(1, 2)$ \\\cline{2-4}
+    \end{tabular}
+    \caption{Payoff Table for Bach-Stravinsky}
+\end{table}
+
+\noindent With $\mu_{H}$ and $\mu_{W}$ we refer to the payoff function for the husband and wife. The set of strategies 
+that the couple can choose is the following one:
+
+\begin{equation*}
+    S_{H} = S_{W} = \{\textrm{Bach}, \textrm{Stravisnky}\}
+\end{equation*}
+
+\noindent To find a mixed strategy we need to convince the players to play a randomized strategy instead of a fixed one.
+We need to find a probability distribution $(p, 1 - p)$ for the wife that makes the husband indifferent. This means that we have to
+equal $\mu_W(\textrm{Bach}) = \mu_W(\textrm{Stravisnky})$, where:
+
+\begin{align*}
+    \mu_W(\textrm{Bach}) = 1 \times p + 0 \times (1 - p) \\
+    \mu_W(\textrm{Stravinsky}) = 0 \times p + 2 \times (1 - p)
+\end{align*}
+
+\noindent Computing the equation $\mu_W(\textrm{Bach}) = \mu_W(\textrm{Stravisnky})$ we obtain:
+
+\begin{equation*}
+    \begin{split}
+        \mu_W(\textrm{Bach}) = \mu_W(\textrm{Stravisnky}) \\
+            & \iff 1 \times p + 0 \times (1 - p) = 0 \times p + 2 \times (1 - p) \\
+            & \iff p = 2 \times (1-p) \\
+            & \iff p = \frac{2}{3}
+    \end{split}
+\end{equation*}
+
+\noindent For the husband we have to act similar. Let us find a probability distribution $(q, 1- q)$ for the husband,
+such that makes the wife indifferent regard to the selected choice. So find $q$ by solving the equation $\mu_H(\textrm{Bach}) = \mu_H(\textrm{Stravinsky})$:
+
+\begin{equation*}
+    \begin{split}
+        \mu_H(\textrm{Bach}) = \mu_H(\textrm{Stravisnky}) \\
+            & \iff 2 \times q + 0 \times (1 - q) = 0 \times q + 1 \times (1-q) \\
+            & \iff 3q = 1 \\
+            & \iff q = \frac{1}{3}
+    \end{split}
+\end{equation*}
 
 \subsection{Solution for `Children to Kindergartens'}
 
@@ -174,8 +225,15 @@ we define the slots in the following way:
     s_{i_{k}} = k\textrm{-th slot available in the school} \; i \quad \textrm{for} \; 0 \le k \le c_i
 \end{equation*}
 
-\noindent According to the game's description, we can model the preferences for each child. First, families with only parent have the higher priority overall. Second, if a child (with a sibiling) is already displaced in 
-a school, then his/her sibling will be placed in the same school. The twins will happen to be in the same school, since they can be seen as a ``unique'' child.
+\noindent According to the game's description, we can model the preferences, for each child, as the distance between the child's location (indicated with $H_i$ for the house and $W_i$ for the parent's workplace) and the school (defining a function $d(H_i, S_i)$). \\
+
+\noindent First, families with only parent have the higher priority overall, so we try to minimize the distance between the parent's workplace and the school as:
+\begin{equation*}
+    \min_{i} \{d(W_i, S_i)  \}
+\end{equation*}
+
+\noindent Second, if a child (with a sibling) is already displaced in a school, then his/her sibling will be placed in the same one, setting the distance $d$ equal to $0$. 
+The twins will happen to be in the same school, since they can be seen as a ``unique'' child with weight $2$.
 
 
 \end{document}
