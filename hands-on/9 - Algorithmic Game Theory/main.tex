@@ -16,6 +16,7 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage{fontspec}
 \usepackage{lstfiracode}
+\usepackage{multirow,array}
 
 % Define command for show :=
 \newcommand{\defeq}{\vcentcolon=}
@@ -85,15 +86,64 @@ The new legislation allows the accused to sue the judge and have him punished in
 Ginko is perplexed and decides to ask you to provide him with a formal demonstration of the correctness/incorrectness of this law. 
 
 
-\subsection{Problem 2: Investement Agency}
+\subsection{Problem 2: Investment Agency}
 
 An investment agency wants to collect a certain amount of money for a project. Aimed at convincing all the members of a group of N people 
 to contribute to the fund, it proposes the following contract: each member can freely decide either to contribute with $100$ euros or not 
 to contribute (retaining money on its own wallet). Independently on this choice, after one year, the fund will be rewarded with an interest of 50\% 
 and uniformly redistributed among all the $N$ members of the group. Describe the game and find the Nash equilibrium. 
 
-\section{Solution}
+\section{Solutions}
 
+\subsection{Diabolik}
 
+Work in progress.
+
+\subsection{Investment Agency}
+
+This game can be modelled as follows:
+\begin{itemize}
+    \item we have $N$ \textit{players}, which are the contributors. We will label each player with $P_i$ for $1 \le i \le N$.
+    \item each player $P_i$ has his/her own \textit{set of strategies} $S_i$, where $S_i = \{\textrm{Contribute}, \textrm{Not Contribute}\}$.
+    \item with the functions $u: S \to \mathbb{Z}$ and $c: S \to \mathbb{Z}$ to denote \textit{payoff} and \textit{cost} for each player, defined below:
+\end{itemize}
+
+\begin{gather*}
+    u(s_i) = \frac{(k \cdot 100) \cdot 0.5}{N} \quad \textrm{where} \; k = \#\textrm{contributing players, including} \; i \\
+    c(s_i) = \begin{cases}
+        100 & \textrm{if} \; \textrm{player} \; P_i \; \textrm{Contibutes} \\
+        0 & \textrm{otherwise}
+    \end{cases}
+\end{gather*}
+
+\noindent The total incomes for a player $P_i$, denoted with $g_i$, are computed using the following equation:
+\begin{equation*}
+    g_i = u(s_i) - c(s_i)
+\end{equation*}
+We can have two specific situations. In the foremost, if the incomes $g_i \ge 0$ then the player benefits from the investments, otherwise, if the incoming
+are $g_i \le 0$ the contributor loses money. The important question to ask ourselves is the following one: when should I contribute for the project?
+To answer that, let us build an incoming matrix, containing all the possible situations for the game. We restrict ourselves in the case of $N=2$ players (this could be easily generalized).
+With $C$ we indicate a \textit{contributing} player, instead, with $NC$ a non-contributing one.
+
+\begin{table}[h!]
+    \centering
+    \setlength{\extrarowheight}{2pt}
+    \begin{tabular}{*{4}{c|}}
+      \multicolumn{2}{c}{} & \multicolumn{2}{c}{Contributor $2$}\\\cline{3-4}
+      \multicolumn{1}{c}{} &  & $C$  & $NC$ \\\cline{2-4}
+      \multirow{2}*{Contributor $1$}  & $C$ & $(-50,-50)$ & $(-75,25)$ \\\cline{2-4}
+      & $NC$ & $(25,-75)$ & $(0,0)$ \\\cline{2-4}
+    \end{tabular}
+    \label{Incoming table for $N=2$ players.}
+\end{table}
+
+\noindent Let us analyze the table:
+\begin{enumerate}
+    \item if the two players decide to contribute, then they will gain $50$ euros, but they will have a gain of $-50$ euros which do not cover the initial costs.
+    \item if one of the two decides to contribute, then the non-contributing player will benefit of $25$ euros for the next year, instead the contributing one has lost $75$ euros.
+    \item if none of them contribute, then they will not gain or lose nothing.
+\end{enumerate}
+
+\noindent Surprisingly enough, the only one \textit{Nash Equilibrium} is obtained when none of the players contributes.
 
 \end{document}
