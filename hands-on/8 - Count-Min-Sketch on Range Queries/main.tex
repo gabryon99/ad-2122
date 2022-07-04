@@ -119,7 +119,7 @@ def range(F: CountMinSketch, a: int, b: int): int:
 
 \subsection{Requested Solution}
 
-\noindent We can improve the baseline solution using the ranges of powers of two. In fact, any range $(a, b)$ can be
+\noindent We can improve the baseline solution using ranges of powers of two. In fact, any range $(a, b)$ can be
 expressed as disjoint union of length with the powers of two, e.g., if we have the range $(4, 10)$:
 $$
 (4, 10) = (4) \cup (5, 8) \cup (9, 10)
@@ -220,7 +220,7 @@ In each level of this ``logic'' binary tree we add a new Count-Min Sketch, havin
 \noindent When we have to update a counter, we traverse the tree updating the counters for each traversed range.
 For instance, if we have to update the counter for the element $7$ in Figure 1, we are going to update the counters
 in each range containing the element, that are: $(1, 16), (1, 8), (5, 8), (7, 8), (7)$. 
-The \verb+update+ operation takes $O(\log n)$ time, the pseudo-Python code is shown in Listing ?.
+The \verb+update+ operation takes $O(\log n)$ time, the pseudo-Python code is shown in Listing below.
 
 \begin{lstlisting}[language=python]
 def update(x: int) -> None:
@@ -253,11 +253,11 @@ def query(r: (int, int)) -> int:
     # Query each CMS in the respective level with
     # the computed ranges
     for (level, range) in ranges:
-        sum += query(CMSS[level], range)
+        sum += normal_query(CMSS[level], range)
     return 0
 \end{lstlisting}
 
-\noindent These algorithms work also with one Count-min Sketch, the universe of the counters will be the dyadic ranges.
+\noindent These algorithms work also with one Count-Min Sketch, the universe of the counters will be the dyadic ranges.
 
 \subsection{Bounding the failure probability}
 
@@ -266,7 +266,7 @@ The error analysis will require some definitions to work with. First, we are goi
     D = \{(1, n), (1, {n}/{2}), ({n}/{2} + 1, n), \dots, (1, 1), (2, 2), \dots, (n, n)\}, |D| = 2n
 \end{equation*}
 
-\noindent The analysis makes use of just one Count-Min Sketch, and it is restricted to the ranges contained in the set $D$. Furthermore, we
+\noindent The analysis makes use of $\log n$ Count-Min Sketches as stated before, and it is restricted to the ranges contained in the set $D$. Furthermore, we
 introduce the function:
 \begin{equation*}
     \textrm{dy}: \mathcal{P}(\mathbb{N} \times \mathbb{N}) \to \mathcal{P}(D) 
@@ -320,10 +320,10 @@ Fixed a $j \in [d]$ and given an $i \in D$ we can define $X_{i}^{(j)}$ as:
     \textrm{Pr}\bigg(\bigg\{X_i \ge 2 \varepsilon \log n ||F||\bigg\}\bigg) \le \frac{E\big[ X_i \big]}{\varepsilon 2 \log n ||F||} = \frac{2\log n \frac{\varepsilon}{e} ||F||}{\varepsilon 2 \log n ||F||} = \frac{1}{e}
 \end{gather*}
 
-\noindent Since we have $r$ row, where each hash function is independent, we will have:
+\noindent Since we have $d$ row, where each hash function is independent, we will have:
 
 \begin{equation*}
-    \prod_{j \in [r]} \textrm{Pr}\bigg(\bigg\{ X_{i}^{(j)} \ge 2 \varepsilon \log n ||F||\bigg\}\bigg) \le \bigg(\frac{1}{e}\bigg)^r = \delta
+    \prod_{j \in [d]} \textrm{Pr}\bigg(\bigg\{ X_{i}^{(j)} \ge 2 \varepsilon \log n ||F||\bigg\}\bigg) \le \bigg(\frac{1}{e}\bigg)^d = \delta
 \end{equation*}
 
 \end{document}
