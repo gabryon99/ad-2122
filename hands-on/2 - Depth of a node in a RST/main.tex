@@ -9,6 +9,9 @@
 \usepackage{calrsfs}
 \usepackage{lmodern}%get scalable font
 \usepackage{titling}
+\usepackage{listings}
+\usepackage{fontspec}
+\usepackage{lstfiracode}
 
 % Define command for show :=
 \newcommand{\defeq}{\vcentcolon=}
@@ -20,7 +23,6 @@
 \newcommand{\Bb}{\pazocal{B}}
 
 \newcommand*{\QEDB}{\null\nobreak\hfill\ensuremath{\square}}
-
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[theorem]
@@ -38,6 +40,27 @@
 }
 \posttitle{
     \end{center}
+}
+
+\setmonofont{FiraCode}[
+    Scale=0.85,
+    Contextuals=Alternate % Activate the calt feature
+]
+
+\lstset{
+    style=FiraCodeStyle,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                
+    showspaces=false,                
+    showstringspaces=false,
+    basewidth=0.6em,
+    showtabs=false,                  
+    tabsize=2,
+    frame=single,
+    basicstyle=\ttfamily, % Use \ttfamily for source code listings
+    commentstyle=\color{ForestGreen}
 }
 
 \setcounter{section}{0}
@@ -60,6 +83,29 @@ A \textbf{random binary search tree} for a set $S$ can be defined as follows: if
 
 \section{Solution}
 
+The hands-on's solution relies on the analysis we did during the lectures with randomized version of Quick-Sort.
+Let us recall for a moment how the algorithm works.
+
+\begin{lstlisting}[language=Python,caption=`Randomized QuickSort']
+def randomizedPartition(A: [int], p: int, r: int) -> int:
+    i = random.randint(p, r)
+    swap(A[r], A[i])
+    return partition(A, p, r)
+
+def randomizedQuickSort(A: [int], p: int, r: int):
+    if p < r:
+        q = randomizedPartition(A, p, r)
+        randomizedQuickSort(A, p, q - 1)
+        randomizedQuickSort(A, q + 1, r)
+\end{lstlisting}
+
+\noindent At the first sight of the code it seems that an RBST and the RQS do have nothing in common. Actually,
+the way how the RBST is build match 1-to-1 to the recursion tree created by the RQS.\\
+
+\noindent When we select a random key $k \in S$ during the building of a RBST (the root of our tree), it corresponds to select a pivot 
+in RQS. And the partition call allows us to create two subtrees ($L, R$) that will have elements less/greater than pivot,
+and then we call the tree build construction algorithm onto the subtrees.\\ 
+
 \subsection{Expected depth of a node}
 
 We define the elements of a random binary search tree with $\forall i \in [1, n] . x_i \in S$. Let $X_{ij}$ an indicator random variable defined as follows:
@@ -75,14 +121,8 @@ We define the elements of a random binary search tree with $\forall i \in [1, n]
 E[D_i] = E\bigg[\sum_{j = 1}^{n} X_{ij}\bigg] = \sum_{j = 1}^{n} E[X_{ij}] = \sum_{j = 1}^{n} \textrm{Pr}(\{X_{ij} = 1\})
 \end{equation}
 
-\noindent The probability of $X_{ij} = 1$ can be computed using the following fact: if the node $x_i$ is an ancestor of $x_j$ it means that $x_i$ is inserted before $x_j$ (and $i > j$), therefore in the set $\{x_j, x_{j + 1}, \dots, x_{i}\}$ we have $i - j + 1$ elements to choice $x_j$, otherwise, if $x_i$ is a descendant of $x_j$ it means that $x_i$ has been inserted after ($i < j$), therefore in the set $\{x_{i}, x_{i + 1}, \dots, x_j\}$ we have $j - i +1$ elements to choice. 
-
-\begin{equation}
-    \textrm{Pr}(\{X_{ij} = 1\}) = \begin{cases}
-        \frac{1}{i - j + 1} & i > j \\
-        \frac{1}{j - i + 1} & i < j
-    \end{cases}
-\end{equation}
+\noindent The probability of $X_{ij} = 1$ can be computed using the analysis we did during lectures with RQS. Since the RQS maps
+over the RBST we can say that $X_{ij} = 1$ when $x_i$ is a pivot (select as root for a tree) or $x_j$ is a pivot.\\
 
 \noindent The expected depth of a node can be computed using this fact:
 
