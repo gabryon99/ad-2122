@@ -147,19 +147,19 @@ $O(m \log m)$ space to store the entire array of prefix sums.\\
 
 \subsubsection{Requested Solution}
 
-\noindent To achieve the requested space $O(m)$ we sample the prefix sums array $P$ and we create a new lookup table $T$, described below.\\
+\noindent To achieve the requested space $O(m)$ we sample the prefix sums array $P$, and we create a new lookup table $T$, described below.\\
 
 \noindent First, we have to determine how many samples
 of the prefix sums we do need. We are going to use $\frac{2m}{\log m}$ samples of prefix sums. Second, how do we build $T$? We define $L = \frac{\log m}{2}$, and we split the bit array $B$
-in $L$ parts. Splitting the bit array leave us with $L$ portions, that we can use to index our lookup table $T$. 
+in $L$ parts. Splitting the bit array leave us with $L/|B|$ portions, that we can use to index our lookup table $T$. 
 How many strings of bits can be represented using $L$ bits? That is, how many rows $T$ will have? Exactly: $\#\textrm{rows} = 2^L$.
 
 \begin{equation}
     \textrm{\#rows} = 2^L = 2^{\frac{\log m}{2}} = (2^{\log m})^{\frac{1}{2}} = \sqrt m
 \end{equation}
 
-\noindent We need $\sqrt m$ rows for $T$. How many columns will have the table $T$? $\# \textrm{columns} = L = \frac{\log m}{2}$. Therefore, our lookup table $T$ will have a size of $\sqrt m \frac{\log m}{2}$. Assuming we have a bit array of size 
-$m = 64$, then the lookup table will look like as shown below.
+\noindent We need $\sqrt m$ rows for $T$. How many columns will have the table $T$? $\# \textrm{columns} = L = \frac{\log m}{2}$. Therefore, our lookup table $T$ will have a size of $\sqrt m \frac{\log m}{2}$.
+Assuming we have a bit array of size $m = 64$, then the lookup table will look like as shown below.
 
 \begin{align}
      \begin{matrix}
@@ -185,8 +185,7 @@ $m = 64$, then the lookup table will look like as shown below.
     \end{bmatrix} 
 \end{align}
 
-\noindent Our table will contain the partial sums of each of the $L$ possible portions as 
-shown in Equation 4.\\
+\noindent Our table will contain the partial sums of each of the possible portions as shown in Equation 4.
 
 \noindent At the end, to compute the rank function we are going to need
 both prefix sums samples and the lookup table $T$.
@@ -215,7 +214,7 @@ need $O(\log \log m)$ bits, thus $O(\sqrt{m}\log m (\log \log m))$ bits.
 
     uint64_t get_row(uint64_t B, uint64_t i) {
         // Shift and mask to get the row index
-        return (B >> (0x3d - (i * 8))) & 0x7;
+        return (B >> (0x40 - (0x3 * (i + 1)))) & 0x7;
     }
 \end{lstlisting}
 
