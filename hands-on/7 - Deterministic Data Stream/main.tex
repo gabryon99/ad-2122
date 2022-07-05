@@ -105,7 +105,7 @@ To begin with, let us define a new function called $\textrm{moreFreq}$ such that
 
 \noindent As suggested by the hints, our main goal is to find two streams $S_1$ and $S_2$ such that $\textrm{mostFreq}(S_1) \ne \textrm{mostFreq}(S_2)$, 
 but for the algorithm $A$ we have $A(S_1) = A(S_2)$. To do so, we take an universe of elements, denoted with $U$, and its subsets $\Sigma_i \subseteq U$ such
-that they have cardinality $|\Sigma_i| = \frac{|U|}{2}$ and $\forall i, j, i \ne j$ they satisfy the following properties:
+that they have cardinality $|\Sigma_i| = \frac{|U|}{2} + 1$ and $\forall i, j, i \ne j$ they satisfy the following properties:
 \begin{enumerate}
     \item $|\Sigma_i \cap \Sigma_j| \ge 1$: have at least one element in common;
     \item $|\Sigma_i \setminus \Sigma_j| \ge 1$: at least one character differ in both sets.
@@ -113,25 +113,41 @@ that they have cardinality $|\Sigma_i| = \frac{|U|}{2}$ and $\forall i, j, i \ne
 
 \noindent How many subsets satisfy the requesting criteria? We use the binomial coefficient to discover that are:
 \begin{equation}
-    \binom{|U|}{\frac{|U|}{2} + 1} \simeq 2^{|U|} > f(k)
+    \binom{|U|}{\frac{|U|}{2} + 1} \simeq 2^{|U|} = \eta
 \end{equation}
 Note that if the cardinality of $U$ is huge then the number of sets will be exponentially large!\\
 
-\noindent Therefore, $\exists S_i \in \Sigma_{i}^*, S_j \in \Sigma_{j}^{*}, S_i \ne S_j$ streams that are indistinguishable for the algorithm $A$, due to the pigeonhole principle.
-These two streams are build as shown below:
+\noindent From these subsets we can build the set of candidate streams $C$ such that $|C| > f(k)$. The Equations 2 and 3 show how to build
+two possible streams using $\Sigma_i$ and $\Sigma_j$ alphabets. Be aware: the streams contain each character coming from its alphabet repeated
+only once (this fact will be exploited later).
 
 \begin{align}
-S_i = s_1^{(i)}s_2^{(i)}s_3^{(i)} \dots s_{\frac{|U|}{2}}^{(i)} \\
-S_j = s_1^{(j)}s_2^{(j)}s_3^{(j)} \dots s_{\frac{|U|}{2}}^{(j)}
+    S_i = s_1^{(i)}s_2^{(i)}s_3^{(i)} \dots s_{\frac{|U|}{2} + 1}^{(i)} \\
+    S_j = s_1^{(j)}s_2^{(j)}s_3^{(j)} \dots s_{\frac{|U|}{2} + 1}^{(j)}
 \end{align}
 
+\noindent But, how big is the set of candidate streams? We have $\eta$ alphabets which from each one we build a string as described above, and we put it in $C$.
+Therefore, the set will have a cardinality of:
+
+\begin{equation*}
+    |C| = \eta = 2^{|U|}
+\end{equation*}
+
+\noindent Since we are requiring that $|C| > f(k)$ we can derive that:
+
+\begin{equation*}
+    |C| > f(k) \iff 2^{|U|} > f(k) \iff |U| > \log{f(k)}
+\end{equation*}
+
+\noindent Therefore, $\exists S_i \in \Sigma_{i}^*, S_j \in \Sigma_{j}^{*} (S_i, S_j \in C)$ such that $S_i \ne S_j $ that those streams are indistinguishable for the algorithm $A$, due to the pigeonhole principle (since $|C| > f(k)$).\\
+
 \noindent Now, if we pick an element $x \in \Sigma_i \setminus \Sigma_j$ and $y \in \Sigma_j \setminus \Sigma_i$, such that $x \ne y$ \footnote{Since we are requesting the properties (1) and (2) we can take such $x$ and $y$.}, and we concatenate them to 
-the streams $S_i, S_j$ obtaining $S_ixy$ and $S_jxy$. Giving these two streams to $A$ we have $A(S_i xy) = A(S_j xy)$ because $S_i$ and $S_j$ are
+the streams $S_i, S_j$ obtaining two new streams $S_ixy$ and $S_jxy$. Giving these two streams to $A$ we have $A(S_i xy) = A(S_j xy)$ because $S_i$ and $S_j$ are
 indistinguishable for $A$. But:
 
-\begin{align*}
+\begin{equation*}
     \textrm{mostFreq}(S_i xy) \ne \textrm{mostFreq}(S_j xy)
-\end{align*}
+\end{equation*}
 
 \noindent Thus, the algorithm $A$ fails.
 
