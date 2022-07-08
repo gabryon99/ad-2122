@@ -149,9 +149,14 @@ $O(m \log m)$ space to store the entire array of prefix sums.\\
 
 \noindent To achieve the requested space $O(m)$ we sample the prefix sums array $P$, and we create a new lookup table $T$, described below.\\
 
-\noindent First, we have to determine how many samples
-of the prefix sums we do need. We are going to use $\frac{2m}{\log m}$ samples of prefix sums. Second, how do we build $T$? We define $L = \frac{\log m}{2}$, and we split the bit array $B$
-in $L$ parts. Splitting the bit array leave us with $L/|B|$ portions, that we can use to index our lookup table $T$. 
+\noindent First, we have to determine how many samples of the prefix sums we do need. We are going to use $\frac{2m}{\log m}$ samples of prefix sums. We will save
+these samples in an array called $P$ of size $|P| = \frac{2m}{\log m}$.\\
+
+\noindent Second, how do we build $T$? When we are asking for the rank of a position which has not a corresponding sample, 
+we have to use the nearest sample to the position, plus the number of ones between the sample and the position itself.\\
+
+\noindent To do so, we define $L = \frac{|B|}{\frac{2m}{\log m}} = \frac{\log m}{2}$ between two samples. We can split the array $B$ in $L$ parts.
+Splitting the bit array leave us with $|B|/L$ portions, that we can use to index our lookup table $T$. 
 How many strings of bits can be represented using $L$ bits? That is, how many rows $T$ will have? Exactly: $\#\textrm{rows} = 2^L$.
 
 \begin{equation}
