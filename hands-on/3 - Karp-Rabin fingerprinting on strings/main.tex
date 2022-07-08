@@ -77,7 +77,7 @@
 
 \section{Introduction}
 
-Given a string $S \equiv S[0 \dots n - 1]$, and two positions $0 \le i < j \le n - 1$, the longest common extension \verb+lce(i, j)+ is the length of the maximal run of matching characters from those positions, namely: if $S[i] \ne S[j]$ then \verb+lce(i, j) = 0+; otherwise, \verb+lce(i, j)+ $= \max \{l \ge 1 : S[i \dots i + l − 1] = S[j \dots j + l − 1]\}$. For example, if $S$ = "\textit{abracadabra}", then \verb+lce(1, 2) = 0+, \verb+lce(0, 3) = 1+, and \verb+lce(0, 7) = 4+. Given $S$ in advance for preprocessing, build a data structure for $S$ based on the \textbf{Karp-Rabin} fingerprinting, in $O(n \log n)$ time, so that it supports subsequent online queries of the following two types: 
+Given a string $S \equiv S[0 \dots n - 1]$, and two positions $0 \le i < j \le n - 1$, the longest common extension \verb+lce(i, j)+ is the length of the maximal run of matching characters from those positions, namely: if $S[i] \ne S[j]$ then \verb+lce(i, j) = 0+; otherwise, \verb+lce(i, j)+ $= \max \{l \ge 1 : S[i \dots i + l - 1] = S[j \dots j + l - 1]\}$. For example, if $S$ = "\textit{abracadabra}", then \verb+lce(1, 2) = 0+, \verb+lce(0, 3) = 1+, and \verb+lce(0, 7) = 4+. Given $S$ in advance for preprocessing, build a data structure for $S$ based on the \textbf{Karp-Rabin} fingerprinting, in $O(n \log n)$ time, so that it supports subsequent online queries of the following two types: 
 
 \begin{itemize}
     \item \verb+lce(i,j)+: it computes the longest common extension at positions $i$ and $j$ in $O(\log n)$ time. 
