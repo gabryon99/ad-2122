@@ -117,13 +117,12 @@ that they have cardinality $|\Sigma_i| = \frac{|U|}{2} + 1$ and $\forall i, j, i
 \end{equation}
 Note that if the cardinality of $U$ is huge then the number of sets will be exponentially large!\\
 
-\noindent From these subsets we can build the set of candidate streams $C$ such that $|C| > f(k)$. The Equations 2 and 3 show how to build
-two possible streams using $\Sigma_i$ and $\Sigma_j$ alphabets. Be aware: the streams contain each character coming from its alphabet repeated
+\noindent From these subsets we can build the set of candidate streams $C$ such that $|C| > f(k)$. Given an alphabet $\Sigma_i$, the Equation 2 shows how to build
+a possible stream. Be aware: the streams contain each character coming from its alphabet repeated
 only once (this fact will be exploited later).
 
 \begin{align}
-    S_i = s_1^{(i)}s_2^{(i)}s_3^{(i)} \dots s_{\frac{|U|}{2} + 1}^{(i)} \\
-    S_j = s_1^{(j)}s_2^{(j)}s_3^{(j)} \dots s_{\frac{|U|}{2} + 1}^{(j)}
+    S_i = s_1^{(i)}s_2^{(i)}s_3^{(i)} \dots s_{\frac{|U|}{2} + 1}^{(i)}, \forall k, j \in [|\Sigma_i|], k \ne j. s_k \ne s_j
 \end{align}
 
 \noindent But, how big is the set of candidate streams? We have $\eta$ alphabets which from each one we build a string as described above, and we put it in $C$.
