@@ -276,7 +276,7 @@ which computes the dyadic ranges of a given range, as described in the previous 
     \forall r \in \mathcal{P}(\mathbb{N} \times \mathbb{N}). |\textrm{dy}(r)| \le 2 \log n
 \end{equation*}
 
-\noindent We express the counter $F_{i}$ where the range $i = (a, b) \in D$. The approximate counter $\tilde{F}_{i}$ is obtained
+\noindent We express the counter $F_{i}$ where the range $i = (a, b) \in \mathcal{P}(\mathbb{N} \times \mathbb{N})$. The approximate counter $\tilde{F}_{i}$ is obtained
 as follows in Equation 1.
 
 \begin{equation}
@@ -289,11 +289,11 @@ To do so, we define a new indicator random variable, as seen in class:
     I_{j,i,k} = \begin{cases}
         1 & h_j(i) = h_j(k) \\
         0 & \textrm{othwerwise}
-    \end{cases} \; i, k \in D, j \in [d]
+    \end{cases} \; i, k \in \mathcal{P}(\mathbb{N} \times \mathbb{N}), j \in [d]
 \end{equation*}
 
 \noindent Therefore, when the $j$-th hash function has a collision with different ranges in $D$ the variable will be set to $1$. 
-Fixed a $j \in [d]$ and given an $i \in D$ we can define $X_{i}^{(j)}$ as: 
+Fixed a $j \in [d]$ and given an $i \in \mathcal{P}(\mathbb{N} \times \mathbb{N})$ we can define $X_{i}^{(j)}$ as: 
 
 \begin{equation*}
     X_{i}^{(j)} = \sum_{k \in \textrm{dy}(i)}I_{j, i, k} \cdot  F_k
